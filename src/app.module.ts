@@ -9,12 +9,16 @@ import { GlobalExceptionFilter } from './config/excpetion-filter/global.exceptio
 @Module({
     imports: [UsersModule],
     controllers: [AppController],
-    providers: [AppService, {
-        provide: APP_FILTER,
-        useClass: ServiceExceptionToHttpExceptionFilter
-    }, {
-        provide: APP_FILTER,
-        useClass: GlobalExceptionFilter
-    }],
+    providers: [
+        AppService,
+        {
+            provide: APP_FILTER,
+            useClass: ServiceExceptionToHttpExceptionFilter,
+        },
+        {
+            provide: APP_FILTER,
+            useClass: GlobalExceptionFilter,
+        },
+    ],
 })
 export class AppModule {}

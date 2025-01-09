@@ -1,5 +1,5 @@
-import { ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
-import { NotExistUserException, ServiceException } from './config/exception/service.exception';
+import { Injectable } from '@nestjs/common';
+import { NotExistUserException } from './config/exception/service.exception';
 
 @Injectable()
 export class AppService {
