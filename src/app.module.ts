@@ -7,6 +7,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './config/excpetion-filter/global.exception.filter';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'node:process';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -14,10 +15,9 @@ import * as process from 'node:process';
             envFilePath: `src/env/.${process.env.NODE_ENV}.env`,
             isGlobal: true,
         })
-        , UsersModule],
+        , UsersModule, AuthModule],
     controllers: [AppController],
     providers: [
-        AppService,
         {
             provide: APP_FILTER,
             useClass: ServiceExceptionToHttpExceptionFilter,
@@ -26,6 +26,7 @@ import * as process from 'node:process';
             provide: APP_FILTER,
             useClass: GlobalExceptionFilter,
         },
+        AppService
     ],
 })
 export class AppModule {}
