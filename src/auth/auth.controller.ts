@@ -9,7 +9,7 @@ export class AuthController {
 
     @UseGuards(KakaoAuthGuard)
     @Get('kakao')
-    async postLogin(@Body() postUsersDto: PostUsersDto) {
+    async postLogin() {
 
     }
 
