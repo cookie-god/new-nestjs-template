@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { NotExistUserException, ServiceException } from './config/exception/service.exception';
 
 @Injectable()

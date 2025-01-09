@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ServiceExceptionToHttpExceptionFilter } from './config/excpetion-filter';
 import { APP_FILTER } from '@nestjs/core';
+import { GlobalExceptionFilter } from './config/excpetion-filter/global.exception.filter';
 
 @Module({
     imports: [UsersModule],
@@ -11,6 +12,9 @@ import { APP_FILTER } from '@nestjs/core';
     providers: [AppService, {
         provide: APP_FILTER,
         useClass: ServiceExceptionToHttpExceptionFilter
+    }, {
+        provide: APP_FILTER,
+        useClass: GlobalExceptionFilter
     }],
 })
 export class AppModule {}
