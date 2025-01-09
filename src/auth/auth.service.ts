@@ -3,6 +3,7 @@ import * as process from 'node:process';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { KakaoUserResponse } from '../users/interface/kakao-user.interface';
+import { PostUsersResponseDto } from '../users/dto/response/post-users.response.dto';
 
 @Injectable()
 export class AuthService {
@@ -10,10 +11,13 @@ export class AuthService {
         private httpService: HttpService,
     ) {}
 
-    async retrieveAccessToken(kakaoAuthResCode: string): Promise<KakaoUserResponse> {
+    async retrieveAccessToken(kakaoAuthResCode: string): Promise<PostUsersResponseDto> {
         const accessToken: string = await this.getKakaoAccessToken(kakaoAuthResCode);
         const kakaoUserResponse: KakaoUserResponse = await this.getKakaoUserInfo(accessToken);
-        return kakaoUserResponse;
+        return {
+            id: kakaoUserResponse.id,
+            email: kakaoUserResponse.kakao_account.email
+        } as PostUsersResponseDto;
     }
 
     async getKakaoAccessToken(code: string): Promise<string> {

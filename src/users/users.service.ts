@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PostUsersDto } from './dto/post-users.dto';
+import { PostUsersRequestDto } from './dto/request/post-users.request.dto';
 
 @Injectable()
 export class UsersService {
-    async createUsers(postUserDto: PostUsersDto) {
+    async createUsers(postUserDto: PostUsersRequestDto) {
         return postUserDto;
     }
 }
