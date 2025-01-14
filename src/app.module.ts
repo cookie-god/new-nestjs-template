@@ -14,8 +14,10 @@ import { AuthModule } from './auth/auth.module';
         ConfigModule.forRoot({
             envFilePath: `src/env/.${process.env.NODE_ENV}.env`,
             isGlobal: true,
-        })
-        , UsersModule, AuthModule],
+        }),
+        UsersModule,
+        AuthModule,
+    ],
     controllers: [AppController],
     providers: [
         {
@@ -26,7 +28,7 @@ import { AuthModule } from './auth/auth.module';
             provide: APP_FILTER,
             useClass: GlobalExceptionFilter,
         },
-        AppService
+        AppService,
     ],
 })
 export class AppModule {}

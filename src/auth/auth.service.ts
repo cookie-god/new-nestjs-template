@@ -7,16 +7,18 @@ import { PostUsersResponseDto } from '../users/dto/response/post-users.response.
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private httpService: HttpService,
-    ) {}
+    constructor(private httpService: HttpService) {}
 
-    async retrieveAccessToken(kakaoAuthResCode: string): Promise<PostUsersResponseDto> {
-        const accessToken: string = await this.getKakaoAccessToken(kakaoAuthResCode);
-        const kakaoUserResponse: KakaoUserResponse = await this.getKakaoUserInfo(accessToken);
+    async retrieveAccessToken(
+        kakaoAuthResCode: string,
+    ): Promise<PostUsersResponseDto> {
+        const accessToken: string =
+            await this.getKakaoAccessToken(kakaoAuthResCode);
+        const kakaoUserResponse: KakaoUserResponse =
+            await this.getKakaoUserInfo(accessToken);
         return {
             id: kakaoUserResponse.id,
-            email: kakaoUserResponse.kakao_account.email
+            email: kakaoUserResponse.kakao_account.email,
         } as PostUsersResponseDto;
     }
 
@@ -26,20 +28,26 @@ export class AuthService {
             grant_type: 'authorization_code',
             client_id: process.env.KAKAO_REST_API_KEY,
             redirect_uri: process.env.KAKAO_REDIRECT_URI,
-            code: code
-        }
-        const response = await firstValueFrom(this.httpService.post(kakaoUrl, null, {
-            params: payload,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }));
+            code: code,
+        };
+        const response = await firstValueFrom(
+            this.httpService.post(kakaoUrl, null, {
+                params: payload,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            }),
+        );
         return response.data.access_token;
     }
 
     async getKakaoUserInfo(accessToken: string): Promise<KakaoUserResponse> {
         const kakaoUrl = 'https://kapi.kakao.com/v2/user/me';
-        const response = await firstValueFrom(this.httpService.get(kakaoUrl, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        }));
+        const response = await firstValueFrom(
+            this.httpService.get(kakaoUrl, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            }),
+        );
         return response.data;
     }
 }

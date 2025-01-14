@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { KakaoAuthGuard } from '../config/kakao/kakao-auth.guard';
-import { KakaoUserResponse } from '../users/interface/kakao-user.interface';
 import { ApiResponse } from '@nestjs/swagger';
 import { PostUsersResponseDto } from '../users/dto/response/post-users.response.dto';
 
@@ -11,18 +10,17 @@ export class AuthController {
 
     @UseGuards(KakaoAuthGuard)
     @Get('kakao')
-    async postLogin() {
-
-    }
-
+    async postLogin() {}
 
     @ApiResponse({
-        status:200,
+        status: 200,
         description: 'success',
-        type: PostUsersResponseDto
+        type: PostUsersResponseDto,
     })
     @Get('kakao/callback')
-    async postKakaoCallback(@Query('code') kakaoAuthResCode: string): Promise<PostUsersResponseDto> {
+    async postKakaoCallback(
+        @Query('code') kakaoAuthResCode: string,
+    ): Promise<PostUsersResponseDto> {
         return this.authService.retrieveAccessToken(kakaoAuthResCode);
     }
 }
