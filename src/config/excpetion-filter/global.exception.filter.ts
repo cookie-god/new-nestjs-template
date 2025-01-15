@@ -21,7 +21,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       statusCode: status,
       code: code,
       message: errorCode.message,
-      path: request.url,
     });
   }
 }

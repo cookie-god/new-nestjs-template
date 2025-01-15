@@ -16,7 +16,6 @@ export class ServiceExceptionToHttpExceptionFilter implements ExceptionFilter {
       statusCode: status,
       code: code,
       message: exception.message,
-      path: request.url,
     });
   }
 }
