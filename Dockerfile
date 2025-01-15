@@ -23,4 +23,4 @@ ENV NODE_ENV=dev
 EXPOSE 3000
 
 # 9. 개발 서버 시작
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "dev"]
