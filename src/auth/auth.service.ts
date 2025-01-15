@@ -6,6 +6,8 @@ import { HttpService } from '@nestjs/axios';
 
 import { KakaoUserResponse } from '../users/interface/kakao-user.interface';
 import { PostUsersResponseDto } from '../users/dto/response/post-users.response.dto';
+import { PostKakaoLoginTestRequestDto } from 'src/users/dto/request/post-kakao-login-test.request.dto';
+import { FailServiceCallException } from 'src/config/exception/service.exception';
 
 @Injectable()
 export class AuthService {
@@ -16,11 +18,22 @@ export class AuthService {
   ): Promise<PostUsersResponseDto> {
     const accessToken: string =
       await this.getKakaoAccessToken(kakaoAuthResCode);
+    console.log(accessToken);
+    const kakaoUserResponse: KakaoUserResponse =
+      await this.getKakaoUserInfo(accessToken);
+    return {
+      id: kakaoUserResponse.id
+    } as PostUsersResponseDto;
+  }
+
+  async retrieveSnsId(
+    postKakaoLoginTestRequest: PostKakaoLoginTestRequestDto,
+  ): Promise<PostUsersResponseDto> {
+    const accessToken: string = postKakaoLoginTestRequest.accessToken;
     const kakaoUserResponse: KakaoUserResponse =
       await this.getKakaoUserInfo(accessToken);
     return {
       id: kakaoUserResponse.id,
-      email: kakaoUserResponse.kakao_account.email,
     } as PostUsersResponseDto;
   }
 
@@ -44,12 +57,16 @@ export class AuthService {
   }
 
   async getKakaoUserInfo(accessToken: string): Promise<KakaoUserResponse> {
-    const kakaoUrl = 'https://kapi.kakao.com/v2/user/me';
-    const response = await firstValueFrom(
-      this.httpService.get(kakaoUrl, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }),
-    );
-    return response.data;
+    try {
+      const kakaoUrl = 'https://kapi.kakao.com/v2/user/me';
+      const response = await firstValueFrom(
+        this.httpService.get(kakaoUrl, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }),
+      );
+      return response.data;
+    } catch (error) {
+        throw FailServiceCallException();
+    }
   }
 }

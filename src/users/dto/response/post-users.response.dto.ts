@@ -7,10 +7,4 @@ export class PostUsersResponseDto {
     required: true,
   })
   id: number;
-  @ApiProperty({
-    example: 'cookie-god@softsquared.com',
-    description: '이메일',
-    required: true,
-  })
-  email: string;
 }

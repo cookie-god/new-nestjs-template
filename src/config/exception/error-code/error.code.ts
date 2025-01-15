@@ -17,6 +17,11 @@ export const NOT_EXIST_USER = new ErrorCodeVo(
   'USER-001',
   'not exist user',
 );
+export const FAIL_SERVICE_CALL = new ErrorCodeVo(
+  500,
+  'SERVER-ERROR-002',
+  'service call fail',
+);
 export const INTERNAL_SERVER_ERROR = new ErrorCodeVo(
   500,
   'SERVER-ERROR-001',
