@@ -1,12 +1,11 @@
 import * as process from 'node:process';
 
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import {
   FailServiceCallException,
   InternalServiceException,
-  NotExistUserException,
 } from 'src/config/exception/service.exception';
 import { KakaoUserResponse } from 'src/auth/interface/kakao-user.interface';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
@@ -64,8 +63,6 @@ export class AuthService {
         this.makeUserInfoEntity(kakaoUserResponse.id),
         queryRunner.manager,
       );
-
-      // throw NotExistUserException();
 
       await queryRunner.commitTransaction();
       return userInfo;
