@@ -1,10 +1,16 @@
-import { ErrorCode, FAIL_SERVICE_CALL, NOT_EXIST_USER } from './error-code/error.code';
+import {
+  ErrorCode,
+  FAIL_SERVICE_CALL,
+  NOT_EXIST_USER,
+} from './error-code/error.code';
 
 export const NotExistUserException = (message?: string): ServiceException => {
   return new ServiceException(NOT_EXIST_USER, message);
 };
 
-export const FailServiceCallException = (message?: string): ServiceException => {
+export const FailServiceCallException = (
+  message?: string,
+): ServiceException => {
   return new ServiceException(FAIL_SERVICE_CALL, message);
 };
 

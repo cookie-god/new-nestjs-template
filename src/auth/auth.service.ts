@@ -3,11 +3,11 @@ import * as process from 'node:process';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-
-import { KakaoUserResponse } from '../users/interface/kakao-user.interface';
-import { PostUsersResponseDto } from '../users/dto/response/post-users.response.dto';
-import { PostKakaoLoginTestRequestDto } from 'src/users/dto/request/post-kakao-login-test.request.dto';
 import { FailServiceCallException } from 'src/config/exception/service.exception';
+import { KakaoUserResponse } from 'src/auth/interface/kakao-user.interface';
+import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
+
+import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test.request.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +22,7 @@ export class AuthService {
     const kakaoUserResponse: KakaoUserResponse =
       await this.getKakaoUserInfo(accessToken);
     return {
-      id: kakaoUserResponse.id
+      id: kakaoUserResponse.id,
     } as PostUsersResponseDto;
   }
 
@@ -66,7 +66,7 @@ export class AuthService {
       );
       return response.data;
     } catch (error) {
-        throw FailServiceCallException();
+      throw FailServiceCallException();
     }
   }
 }
