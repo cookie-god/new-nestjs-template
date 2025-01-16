@@ -10,12 +10,27 @@ import { UsersModule } from './users/users.module';
 import { ServiceExceptionToHttpExceptionFilter } from './config/excpetion-filter';
 import { GlobalExceptionFilter } from './config/excpetion-filter/global.exception.filter';
 import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `src/env/.${process.env.NODE_ENV}.env`,
       isGlobal: true,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: 3306,
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: false,
+      extra: {
+        supportBigNumbers: true,
+        bigNumberStrings: false,
+      },
     }),
     UsersModule,
     AuthModule,

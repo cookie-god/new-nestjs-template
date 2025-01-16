@@ -1,18 +1,19 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 
-@Entity('USER_INFO')
+@Entity({ name: 'USER_INFO' })
 export class UserInfo extends BaseEntity {
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
   id: number;
 
-  @Column({ type: 'varchar', length: 20, nullable: false })
+  @Column({ name: 'sns_type', type: 'varchar', length: 20, nullable: false })
   snsType: string;
 
-  @Column({ type: 'bigint', nullable: false })
+  @Column({ name: 'sns_id', type: 'bigint', nullable: false })
   snsId: number;
 
   @Column({
+    name: 'policy_agreement_date',
     type: 'timestamp',
     nullable: false,
     default: () => 'CURRENT_TIMESTAMP',
@@ -20,18 +21,19 @@ export class UserInfo extends BaseEntity {
   policyAgreementDate: Date;
 
   @Column({
+    name: 'terms_agreement_date',
     type: 'timestamp',
     nullable: false,
     default: () => 'CURRENT_TIMESTAMP',
   })
   termsAgreementDate: Date;
 
-  @Column({ type: 'varchar', length: 512, nullable: true })
+  @Column({ name: 'fcm_token', type: 'varchar', length: 512, nullable: true })
   fcmToken?: string;
 
-  @Column({ type: 'time', nullable: true })
+  @Column({ name: 'alarm_time', type: 'time', nullable: true })
   alarmTime?: string;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ name: 'goal_page', type: 'int', nullable: true })
   goalPage?: number;
 }

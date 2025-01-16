@@ -1,17 +1,29 @@
 import * as process from 'node:process';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { FailServiceCallException } from 'src/config/exception/service.exception';
+import {
+  FailServiceCallException,
+  InternalServiceException,
+  NotExistUserException,
+} from 'src/config/exception/service.exception';
 import { KakaoUserResponse } from 'src/auth/interface/kakao-user.interface';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 
 import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test.request.dto';
+import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login.request.dto';
+import { UserInfo } from 'src/entity/user.entity';
+import { AuthRepository } from './auth.repository';
+import { DataSource, QueryRunner } from 'typeorm';
 
 @Injectable()
 export class AuthService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private readonly authRepository: AuthRepository,
+    private readonly httpService: HttpService,
+    private dataSource: DataSource,
+  ) {}
 
   async retrieveAccessToken(
     kakaoAuthResCode: string,
@@ -35,6 +47,43 @@ export class AuthService {
     return {
       id: kakaoUserResponse.id,
     } as PostUsersResponseDto;
+  }
+
+  async kakaoLogin(
+    postKakaoLoginRequest: PostKakaoLoginRequestDto,
+  ): Promise<UserInfo> {
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const kakaoUserResponse: KakaoUserResponse = await this.getKakaoUserInfo(
+        postKakaoLoginRequest.accessToken,
+      );
+
+      const userInfo: UserInfo = await this.authRepository.saveUser(
+        this.makeUserInfoEntity(kakaoUserResponse.id),
+        queryRunner.manager,
+      );
+
+      // throw NotExistUserException();
+
+      await queryRunner.commitTransaction();
+      return userInfo;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw InternalServiceException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  makeUserInfoEntity(snsId: number): UserInfo {
+    // const now: Date = new Date();
+    return {
+      id: null,
+      snsType: 'kakao',
+      snsId: snsId,
+    } as UserInfo;
   }
 
   async getKakaoAccessToken(code: string): Promise<string> {

@@ -1,6 +1,7 @@
 import {
   ErrorCode,
   FAIL_SERVICE_CALL,
+  INTERNAL_SERVER_ERROR,
   NOT_EXIST_USER,
 } from './error-code/error.code';
 
@@ -12,6 +13,12 @@ export const FailServiceCallException = (
   message?: string,
 ): ServiceException => {
   return new ServiceException(FAIL_SERVICE_CALL, message);
+};
+
+export const InternalServiceException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(INTERNAL_SERVER_ERROR, message);
 };
 
 export class ServiceException extends Error {

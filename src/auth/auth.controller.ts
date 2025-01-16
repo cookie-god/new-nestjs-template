@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test.request.dto';
 import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login.request.dto';
+import { UserInfo } from 'src/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -33,8 +34,10 @@ export class AuthController {
     return this.authService.retrieveSnsId(postKakaoLoginTestRequest);
   }
 
-  // @Post('kakao/login')
-  // async postKakaoLogin(
-  //   @Body() postKakaoLoginRequestDto: PostKakaoLoginRequestDto,
-  // ) {}
+  @Post('kakao/login')
+  async postKakaoLogin(
+    @Body() postKakaoLoginRequestDto: PostKakaoLoginRequestDto,
+  ): Promise<UserInfo> {
+    return this.authService.kakaoLogin(postKakaoLoginRequestDto);
+  }
 }
