@@ -10,6 +10,21 @@ export class AuthRepository {
     private readonly userRepository: Repository<UserInfo>,
   ) {}
 
+  async findUserBySnsId(
+    snsId: number,
+    manager: EntityManager,
+  ): Promise<UserInfo> | null {
+    const user: UserInfo | null = await manager
+      .getRepository(UserInfo)
+      .findOne({
+        where: {
+          snsId: snsId,
+          status: 'ACTIVE',
+        },
+      });
+    return user;
+  }
+
   async saveUser(
     userInfo: UserInfo,
     manager: EntityManager,

@@ -59,12 +59,21 @@ export class AuthService {
         postKakaoLoginRequest.accessToken,
       );
 
-      const userInfo: UserInfo = await this.authRepository.saveUser(
-        this.makeUserInfoEntity(kakaoUserResponse.id),
+      let userInfo: UserInfo | null = await this.authRepository.findUserBySnsId(
+        kakaoUserResponse.id,
         queryRunner.manager,
       );
 
+      if (userInfo) {
+        console.log('already exist');
+      } else {
+        userInfo = await this.authRepository.saveUser(
+          this.makeUserInfoEntity(kakaoUserResponse.id),
+          queryRunner.manager,
+        );
+      }
       await queryRunner.commitTransaction();
+
       return userInfo;
     } catch (error) {
       await queryRunner.rollbackTransaction();
