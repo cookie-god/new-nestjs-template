@@ -4,6 +4,7 @@ import { KakaoAuthGuard } from '../config/kakao/kakao-auth.guard';
 import { AuthService } from './auth.service';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test.request.dto';
+import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login.request.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,4 +32,9 @@ export class AuthController {
   ): Promise<PostUsersResponseDto> {
     return this.authService.retrieveSnsId(postKakaoLoginTestRequest);
   }
+
+  // @Post('kakao/login')
+  // async postKakaoLogin(
+  //   @Body() postKakaoLoginRequestDto: PostKakaoLoginRequestDto,
+  // ) {}
 }
