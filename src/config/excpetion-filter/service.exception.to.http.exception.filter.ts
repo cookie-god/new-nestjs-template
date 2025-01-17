@@ -1,10 +1,16 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Response } from 'express';
 
 import { ServiceException } from '../exception/service.exception';
 import {
   ErrorCode,
   INTERNAL_SERVER_ERROR,
+  NOT_EXIST_USER,
 } from '../exception/error-code/error.code';
 
 @Catch()
@@ -22,12 +28,25 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         code: code,
         message: exception.message,
       });
+    } else if (exception instanceof UnauthorizedException) {
+      // 예상치 못한 에러가 발생한 경우
+      const errorCode: ErrorCode = NOT_EXIST_USER;
+      const status = errorCode.status;
+      const code = errorCode.code;
+
+      // console.log(exception);
+      response.status(status).json({
+        statusCode: status,
+        code: code,
+        message: exception.message,
+      });
     } else {
       // 예상치 못한 에러가 발생한 경우
       const errorCode: ErrorCode = INTERNAL_SERVER_ERROR;
       const status = errorCode.status;
       const code = errorCode.code;
 
+      console.log(exception);
       response.status(status).json({
         statusCode: status,
         code: code,

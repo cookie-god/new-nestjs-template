@@ -99,7 +99,9 @@ export class AuthService {
         id: userInfo.id,
       };
 
+      // jwt 생성
       const token = this.jwtService.sign(payload);
+
       await queryRunner.commitTransaction();
 
       return {

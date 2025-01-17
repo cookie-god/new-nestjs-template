@@ -10,11 +10,12 @@ export function setupSwagger(app: INestApplication): void {
       {
         type: 'http',
         scheme: 'bearer',
+        bearerFormat: 'JWT', // 선택 사항
         name: 'JWT',
         description: 'Enter JWT token',
         in: 'header',
       },
-      'token',
+      'JWT',
     )
     .build();
   const document = SwaggerModule.createDocument(app, options);
