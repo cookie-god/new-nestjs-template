@@ -1,4 +1,4 @@
-class ErrorCodeVo {
+export class ErrorCodeVo {
   readonly status: number;
   readonly code: string;
   readonly message: string;

@@ -13,5 +13,5 @@ export abstract class CommonResponse {
     description: 'http status 코드',
     required: true,
   })
-  code: number;
+  status: number;
 }

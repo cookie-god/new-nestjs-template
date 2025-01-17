@@ -6,6 +6,7 @@ import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test-request.dto';
 import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login-request.dto';
 import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
+import { INTERNAL_SERVER_ERROR } from 'src/config/exception/error-code/error.code';
 
 @Controller('auth')
 export class AuthController {
@@ -34,14 +35,28 @@ export class AuthController {
     return this.authService.retrieveSnsId(postKakaoLoginTestRequest);
   }
 
-  @ApiResponse({ type: PostKakaoLoginResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'success',
+    type: PostKakaoLoginResponseDto,
+  })
+  @ApiResponse({
+    description: '내부 서버 오류',
+    schema: {
+      example: {
+        status: INTERNAL_SERVER_ERROR.status,
+        code: INTERNAL_SERVER_ERROR.code,
+        message: INTERNAL_SERVER_ERROR.message,
+      },
+    },
+  })
   @Post('kakao/login')
   async postKakaoLogin(
     @Body() postKakaoLoginRequestDto: PostKakaoLoginRequestDto,
   ): Promise<PostKakaoLoginResponseDto> {
     return {
       message: 'SUCCESS',
-      code: 200,
+      status: 200,
       data: await this.authService.kakaoLogin(postKakaoLoginRequestDto),
     } as PostKakaoLoginResponseDto;
   }
