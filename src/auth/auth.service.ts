@@ -17,7 +17,7 @@ import { AuthRepository } from './auth.repository';
 import { DataSource, QueryRunner } from 'typeorm';
 import { payload } from './interface/user-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
+import { PostKakaoLoginData } from './dto/response/post-kakao-login-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +70,7 @@ export class AuthService {
    */
   async kakaoLogin(
     postKakaoLoginRequest: PostKakaoLoginRequestDto,
-  ): Promise<PostKakaoLoginResponseDto> {
+  ): Promise<PostKakaoLoginData> {
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -108,7 +108,7 @@ export class AuthService {
         token: token,
         goalPage: userInfo.goalPage ?? 0,
         alarmTime: userInfo.alarmTime,
-      } as PostKakaoLoginResponseDto;
+      } as PostKakaoLoginData;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw InternalServiceException(error.message);

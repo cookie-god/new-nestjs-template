@@ -5,7 +5,6 @@ import { AuthService } from './auth.service';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test-request.dto';
 import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login-request.dto';
-import { UserInfo } from 'src/entity/user.entity';
 import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 
 @Controller('auth')
@@ -40,6 +39,10 @@ export class AuthController {
   async postKakaoLogin(
     @Body() postKakaoLoginRequestDto: PostKakaoLoginRequestDto,
   ): Promise<PostKakaoLoginResponseDto> {
-    return this.authService.kakaoLogin(postKakaoLoginRequestDto);
+    return {
+      message: 'SUCCESS',
+      code: 200,
+      data: await this.authService.kakaoLogin(postKakaoLoginRequestDto),
+    } as PostKakaoLoginResponseDto;
   }
 }
