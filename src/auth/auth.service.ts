@@ -10,17 +10,21 @@ import {
 import { KakaoUserResponse } from 'src/auth/interface/kakao-user.interface';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 
-import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test.request.dto';
-import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login.request.dto';
+import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test-request.dto';
+import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login-request.dto';
 import { UserInfo } from 'src/entity/user.entity';
 import { AuthRepository } from './auth.repository';
 import { DataSource, QueryRunner } from 'typeorm';
+import { UserPayloadDto } from './dto/model/user-payload.dto';
+import { JwtService } from '@nestjs/jwt';
+import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly httpService: HttpService,
+    private readonly jwtService: JwtService,
     private dataSource: DataSource,
   ) {}
 
@@ -66,7 +70,7 @@ export class AuthService {
    */
   async kakaoLogin(
     postKakaoLoginRequest: PostKakaoLoginRequestDto,
-  ): Promise<UserInfo> {
+  ): Promise<PostKakaoLoginResponseDto> {
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -83,17 +87,26 @@ export class AuthService {
       );
 
       // 유저 정보가 존재한다면 로그인, 아니라면 회원가입
-      if (userInfo) {
-        console.log('already exist');
-      } else {
+      if (!userInfo) {
         userInfo = await this.authRepository.saveUser(
           this.makeUserInfoEntity(kakaoUserResponse.id),
           queryRunner.manager,
         );
       }
+
+      // 페이로드 생성
+      const payload: UserPayloadDto = {
+        id: userInfo.id,
+      };
+
+      const token = this.jwtService.sign(payload);
       await queryRunner.commitTransaction();
 
-      return userInfo;
+      return {
+        token: token,
+        goalPage: userInfo.goalPage ?? 0,
+        alarmTime: userInfo.alarmTime,
+      } as PostKakaoLoginResponseDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw InternalServiceException(error.message);

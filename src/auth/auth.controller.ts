@@ -3,9 +3,10 @@ import { ApiResponse } from '@nestjs/swagger';
 import { KakaoAuthGuard } from '../config/kakao/kakao-auth.guard';
 import { AuthService } from './auth.service';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
-import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test.request.dto';
-import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login.request.dto';
+import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test-request.dto';
+import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login-request.dto';
 import { UserInfo } from 'src/entity/user.entity';
+import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -34,10 +35,11 @@ export class AuthController {
     return this.authService.retrieveSnsId(postKakaoLoginTestRequest);
   }
 
+  @ApiResponse({ type: PostKakaoLoginResponseDto })
   @Post('kakao/login')
   async postKakaoLogin(
     @Body() postKakaoLoginRequestDto: PostKakaoLoginRequestDto,
-  ): Promise<UserInfo> {
+  ): Promise<PostKakaoLoginResponseDto> {
     return this.authService.kakaoLogin(postKakaoLoginRequestDto);
   }
 }
