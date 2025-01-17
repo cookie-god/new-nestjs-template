@@ -106,7 +106,7 @@ export class AuthService {
 
       return {
         token: token,
-        goalPage: userInfo.goalPage ?? 0,
+        goalPage: userInfo.goalPage,
         alarmTime: userInfo.alarmTime,
       } as PostKakaoLoginData;
     } catch (error) {
@@ -125,6 +125,7 @@ export class AuthService {
       id: null,
       snsType: 'kakao',
       snsId: snsId,
+      goalPage: 0,
     } as UserInfo;
   }
 
