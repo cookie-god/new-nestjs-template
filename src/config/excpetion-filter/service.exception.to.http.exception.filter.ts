@@ -1,21 +1,36 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
 import { ServiceException } from '../exception/service.exception';
+import {
+  ErrorCode,
+  INTERNAL_SERVER_ERROR,
+} from '../exception/error-code/error.code';
 
-@Catch(ServiceException)
-export class ServiceExceptionToHttpExceptionFilter implements ExceptionFilter {
-  catch(exception: ServiceException, host: ArgumentsHost): void {
+@Catch()
+export class GlobalExceptionFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-    const status = exception.errorCode.status;
-    const code = exception.errorCode.code;
 
-    response.status(status).json({
-      statusCode: status,
-      code: code,
-      message: exception.message,
-    });
+    if (exception instanceof ServiceException) {
+      const status = exception.errorCode.status;
+      const code = exception.errorCode.code;
+      response.status(status).json({
+        statusCode: status,
+        code: code,
+        message: exception.message,
+      });
+    } else {
+      const errorCode: ErrorCode = INTERNAL_SERVER_ERROR;
+      const status = errorCode.status;
+      const code = errorCode.code;
+
+      response.status(status).json({
+        statusCode: status,
+        code: code,
+        message: errorCode.message,
+      });
+    }
   }
 }

@@ -1,14 +1,11 @@
 import * as process from 'node:process';
 
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { ServiceExceptionToHttpExceptionFilter } from './config/excpetion-filter';
-import { GlobalExceptionFilter } from './config/excpetion-filter/global.exception.filter';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -36,16 +33,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: ServiceExceptionToHttpExceptionFilter,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
-    },
-    AppService,
-  ],
+  providers: [AppService],
 })
 export class AppModule {}
