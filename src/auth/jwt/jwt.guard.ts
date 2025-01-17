@@ -4,6 +4,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import {
+  ExpiredJWTException,
+  InvalidJWTException,
+  NotExistJWTException,
+  NotExistUserException,
+} from 'src/config/exception/service.exception';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -16,15 +22,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   ): TUser {
     if (err || !user) {
       // 커스텀 예외 처리 (예: NotExistUserException)
+      console.log(user);
       if (info?.name === 'TokenExpiredError') {
-        throw new UnauthorizedException('JWT 토큰이 만료되었습니다.');
+        throw ExpiredJWTException();
       } else if (info?.name === 'JsonWebTokenError') {
-        throw new UnauthorizedException('JWT 토큰이 유효하지 않습니다.');
-      } else if (err?.message === 'NotExistUserException') {
-        console.log('check');
-        throw new UnauthorizedException('존재하지 않는 사용자입니다.');
+        throw InvalidJWTException();
+      } else if (user === undefined) {
+        throw NotExistUserException();
       }
-      throw err || new UnauthorizedException('JWT 토큰이 존재하지 않습니다.');
+      throw NotExistJWTException();
     }
     return user;
   }
