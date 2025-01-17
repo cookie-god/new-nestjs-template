@@ -15,7 +15,7 @@ import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login-request
 import { UserInfo } from 'src/entity/user.entity';
 import { AuthRepository } from './auth.repository';
 import { DataSource, QueryRunner } from 'typeorm';
-import { UserPayloadDto } from './dto/model/user-payload.dto';
+import { payload } from './interface/user-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 
@@ -95,7 +95,7 @@ export class AuthService {
       }
 
       // 페이로드 생성
-      const payload: UserPayloadDto = {
+      const payload: payload = {
         id: userInfo.id,
       };
 
