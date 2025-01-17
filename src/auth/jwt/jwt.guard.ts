@@ -22,7 +22,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   ): TUser {
     if (err || !user) {
       // 커스텀 예외 처리 (예: NotExistUserException)
-      console.log(user);
       if (info?.name === 'TokenExpiredError') {
         throw ExpiredJWTException();
       } else if (info?.name === 'JsonWebTokenError') {
