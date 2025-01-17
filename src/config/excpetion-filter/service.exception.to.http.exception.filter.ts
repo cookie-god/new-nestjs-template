@@ -14,6 +14,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     if (exception instanceof ServiceException) {
+      // 서비스에서 발생한 에러인 경우
       const status = exception.errorCode.status;
       const code = exception.errorCode.code;
       response.status(status).json({
@@ -22,6 +23,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message: exception.message,
       });
     } else {
+      // 예상치 못한 에러가 발생한 경우
       const errorCode: ErrorCode = INTERNAL_SERVER_ERROR;
       const status = errorCode.status;
       const code = errorCode.code;
