@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './config/interceptor/logging.interceptor';
+import logger from './config/logger/logger';
 
 @Module({
   imports: [
@@ -39,6 +40,10 @@ import { LoggingInterceptor } from './config/interceptor/logging.interceptor';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: 'Logger',
+      useValue: logger,
     },
     AppService,
   ],
