@@ -17,7 +17,8 @@ import { AuthRepository } from './auth.repository';
 import { DataSource, QueryRunner } from 'typeorm';
 import { payload } from './interface/user-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import { PostKakaoLoginData } from './dto/response/post-kakao-login-response.dto';
+import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +71,7 @@ export class AuthService {
    */
   async kakaoLogin(
     postKakaoLoginRequest: PostKakaoLoginRequestDto,
-  ): Promise<PostKakaoLoginData> {
+  ): Promise<PostKakaoLoginResponseDto> {
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -79,6 +80,7 @@ export class AuthService {
       const kakaoUserResponse: KakaoUserResponse = await this.getKakaoUserInfo(
         postKakaoLoginRequest.accessToken,
       );
+      let flag = false;
 
       // sns id를 토대로 DB로부터 유저 정보를 확인함
       let userInfo: UserInfo | null = await this.authRepository.findUserBySnsId(
@@ -92,6 +94,7 @@ export class AuthService {
           this.makeUserInfoEntity(kakaoUserResponse.id),
           queryRunner.manager,
         );
+        flag = true; // 회원가입
       }
 
       // 페이로드 생성
@@ -104,11 +107,12 @@ export class AuthService {
 
       await queryRunner.commitTransaction();
 
-      return {
+      return plainToInstance(PostKakaoLoginResponseDto, {
         token: token,
         goalPage: userInfo.goalPage,
         alarmTime: userInfo.alarmTime,
-      } as PostKakaoLoginData;
+        flag: flag,
+      });
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw InternalServiceException(error.message);
@@ -121,12 +125,12 @@ export class AuthService {
    * 유저 엔티티를 만들어주는 함수
    */
   makeUserInfoEntity(snsId: number): UserInfo {
-    return {
+    return plainToInstance(UserInfo, {
       id: null,
       snsType: 'kakao',
       snsId: snsId,
       goalPage: 0,
-    } as UserInfo;
+    });
   }
 
   /**

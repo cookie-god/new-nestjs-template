@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export abstract class CommonResponse {
+export class CommonResponse<T> {
   @ApiProperty({
     example: 'SUCCESS',
     description: 'api 성공 메시지',
@@ -14,4 +14,10 @@ export abstract class CommonResponse {
     required: true,
   })
   status: number;
+
+  @ApiProperty({
+    description: '결과 데이터',
+    required: true,
+  })
+  data: T;
 }

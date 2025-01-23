@@ -7,6 +7,8 @@ import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-tes
 import { PostKakaoLoginRequestDto } from './dto/request/post-kakao-login-request.dto';
 import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 import { KakaoLoginSwaggerDecorator } from './auth-swagger.decorator';
+import { plainToInstance } from 'class-transformer';
+import { CommonResponse } from 'src/config/response/common.response';
 
 @ApiTags('AUTH')
 @Controller('auth')
@@ -40,11 +42,11 @@ export class AuthController {
   @Post('kakao/login')
   async postKakaoLogin(
     @Body() postKakaoLoginRequestDto: PostKakaoLoginRequestDto,
-  ): Promise<PostKakaoLoginResponseDto> {
-    return {
+  ): Promise<CommonResponse<PostKakaoLoginResponseDto>> {
+    return plainToInstance(CommonResponse<PostKakaoLoginResponseDto>, {
       message: 'SUCCESS',
       status: 200,
       data: await this.authService.kakaoLogin(postKakaoLoginRequestDto),
-    } as PostKakaoLoginResponseDto;
+    });
   }
 }

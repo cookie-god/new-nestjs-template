@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CommonResponse } from 'src/config/response/common.response';
 
-export class PostKakaoLoginData {
+export class PostKakaoLoginResponseDto {
   @ApiProperty({
     example: 'token',
     description: 'jwt 토큰',
@@ -23,12 +22,11 @@ export class PostKakaoLoginData {
     required: true,
   })
   alarmTime: string;
-}
 
-export class PostKakaoLoginResponseDto extends CommonResponse {
   @ApiProperty({
-    description: '로그인 데이터',
+    example: false,
+    description: '회원가입한 경우 true, 로그인한 경우 false',
     required: true,
   })
-  data: PostKakaoLoginData;
+  flag: boolean;
 }
