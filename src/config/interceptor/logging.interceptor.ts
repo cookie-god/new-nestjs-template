@@ -14,6 +14,9 @@ export class LoggingInterceptor implements NestInterceptor {
     const { method, url, body, query, params } = request;
     const startTime = Date.now();
 
+    console.log(
+      '=====================================================================================================',
+    );
     console.log(`[Request] ${method} ${url}`);
     console.log(`[Query Params]:`, query);
     console.log(`[Path Variables]:`, params);
@@ -29,6 +32,9 @@ export class LoggingInterceptor implements NestInterceptor {
           `[Response] ${method} ${url} - Status: ${statusCode} - Time: ${duration}ms`,
         );
         console.log(`[Response Body]:`, data);
+        console.log(
+          '=====================================================================================================\n',
+        );
       }),
     );
   }
