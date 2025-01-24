@@ -7,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 import { CommonResponse } from 'src/config/response/common.response';
+import { INTERNAL_SERVER_ERROR } from 'src/config/exception/error-code/error.code';
 
 export function KakaoLoginSwaggerDecorator() {
   return applyDecorators(
@@ -17,8 +18,8 @@ export function KakaoLoginSwaggerDecorator() {
     }),
     ApiExtraModels(CommonResponse, PostKakaoLoginResponseDto),
     ApiResponse({
-      status: 200,
-      description: '카카오 로그인 성공',
+      status: 2000,
+      description: '요청 성공',
       schema: {
         allOf: [
           { $ref: getSchemaPath(CommonResponse) },
@@ -31,13 +32,13 @@ export function KakaoLoginSwaggerDecorator() {
       },
     }),
     ApiResponse({
-      status: 500,
-      description: '내부 서버 오류',
+      status: INTERNAL_SERVER_ERROR.code,
+      description: INTERNAL_SERVER_ERROR.message,
       schema: {
         example: {
-          status: '500',
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'An unexpected error occurred on the server.',
+          status: INTERNAL_SERVER_ERROR.status,
+          code: INTERNAL_SERVER_ERROR.code,
+          message: INTERNAL_SERVER_ERROR.message,
         },
       },
     }),
