@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-
-import { KakaoStrategy } from '../config/kakao/kakao.strategy';
-
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,6 +8,8 @@ import { AuthRepository } from './auth.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt/jwt.strategy';
+import { HttpApiService } from '../http-api/http-api.service';
+import { KakaoStrategy } from 'src/config/kakao/kakao.strategy';
 
 @Module({
   imports: [
@@ -27,6 +26,12 @@ import { JwtStrategy } from './jwt/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository, KakaoStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    HttpApiService,
+    AuthRepository,
+    KakaoStrategy,
+    JwtStrategy,
+  ],
 })
 export class AuthModule {}

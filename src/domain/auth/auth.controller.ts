@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { KakaoAuthGuard } from '../config/kakao/kakao-auth.guard';
 import { AuthService } from './auth.service';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test-request.dto';
@@ -9,6 +8,7 @@ import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-respo
 import { KakaoLoginSwaggerDecorator } from './auth-swagger.decorator';
 import { plainToInstance } from 'class-transformer';
 import { CommonResponse } from 'src/config/response/common.response';
+import { KakaoAuthGuard } from 'src/config/kakao/kakao-auth.guard';
 
 @ApiTags('AUTH')
 @Controller('auth')

@@ -1,13 +1,9 @@
-import * as process from 'node:process';
-
 import { Injectable } from '@nestjs/common';
-import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import {
   FailServiceCallException,
   InternalServiceException,
 } from 'src/config/exception/service.exception';
-import { KakaoUserResponse } from 'src/auth/interface/kakao-user.interface';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 
 import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test-request.dto';
@@ -19,13 +15,17 @@ import { payload } from './interface/user-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { KakaoUserResponse } from './interface/kakao-user.interface';
+import { HttpApiService } from '../http-api/http-api.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly httpService: HttpService,
     private readonly jwtService: JwtService,
+    private readonly httpApiService: HttpApiService,
+    private readonly configService: ConfigService,
     private dataSource: DataSource,
   ) {}
 
@@ -137,22 +137,26 @@ export class AuthService {
    * 인가 코드를 통해 엑세스 토큰을 가져오는 함수
    */
   async getKakaoAccessToken(code: string): Promise<string> {
-    const kakaoUrl = 'https://kauth.kakao.com/oauth/token';
-    const payload = {
-      grant_type: 'authorization_code',
-      client_id: process.env.KAKAO_REST_API_KEY,
-      redirect_uri: process.env.KAKAO_REDIRECT_URI,
-      code: code,
-    };
-    const response = await firstValueFrom(
-      this.httpService.post(kakaoUrl, null, {
-        params: payload,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }),
-    );
-    return response.data.access_token;
+    try {
+      const kakaoUrl = 'https://kauth.kakao.com/oauth/token';
+      const payload = {
+        grant_type: 'authorization_code',
+        client_id: this.configService.get<string>('KAKAO_REST_API_KEY'),
+        redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI'),
+        code: code,
+      };
+      const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+      const response = await this.httpApiService.post<{ access_token: string }>(
+        kakaoUrl,
+        payload,
+        headers,
+      );
+      return response.access_token;
+    } catch (error) {
+      throw FailServiceCallException(error.message);
+    }
   }
 
   /**
@@ -161,12 +165,14 @@ export class AuthService {
   async getKakaoUserInfo(accessToken: string): Promise<KakaoUserResponse> {
     try {
       const kakaoUrl = 'https://kapi.kakao.com/v2/user/me';
-      const response = await firstValueFrom(
-        this.httpService.get(kakaoUrl, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }),
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      return await this.httpApiService.get<KakaoUserResponse>(
+        kakaoUrl,
+        {},
+        headers,
       );
-      return response.data;
     } catch (error) {
       throw FailServiceCallException();
     }
