@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import logger from '../logger/logger';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -14,13 +15,13 @@ export class LoggingInterceptor implements NestInterceptor {
     const { method, url, body, query, params } = request;
     const startTime = Date.now();
 
-    console.log(
+    logger.info(
       '=====================================================================================================',
     );
-    console.log(`[Request] ${method} ${url}`);
-    console.log(`[Query Params]:`, query);
-    console.log(`[Path Variables]:`, params);
-    console.log(`[Body]:`, body);
+    logger.info(`[Request] ${method} ${url}`);
+    logger.info(`[Query Params]:`, query);
+    logger.info(`[Path Variables]:`, params);
+    logger.info(`[Body]:`, body);
 
     return next.handle().pipe(
       tap((data) => {
@@ -28,11 +29,11 @@ export class LoggingInterceptor implements NestInterceptor {
         const statusCode = response.statusCode;
         const duration = Date.now() - startTime;
 
-        console.log(
+        logger.info(
           `[Response] ${method} ${url} - Status: ${statusCode} - Time: ${duration}ms`,
         );
-        console.log(`[Response Body]:`, data);
-        console.log(
+        logger.info(`[Response Body]:`, data);
+        logger.info(
           '=====================================================================================================\n',
         );
       }),
