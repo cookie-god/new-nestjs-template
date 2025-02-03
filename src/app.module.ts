@@ -8,15 +8,19 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './config/interceptor/logging.interceptor';
-import logger from './config/logger/logger';
 import { UsersModule } from './domain/users/users.module';
 import { AuthModule } from './domain/auth/auth.module';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import { logger } from './config/logger/logger';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `src/env/.${process.env.NODE_ENV}.env`,
       isGlobal: true,
+    }),
+    ElasticsearchModule.register({
+      node: 'http://elasticsearch:9200',
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
