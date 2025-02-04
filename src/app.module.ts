@@ -11,7 +11,6 @@ import { LoggingInterceptor } from './config/interceptor/logging.interceptor';
 import { UsersModule } from './domain/users/users.module';
 import { AuthModule } from './domain/auth/auth.module';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
-import { logger } from './config/logger/logger';
 
 @Module({
   imports: [
@@ -45,10 +44,6 @@ import { logger } from './config/logger/logger';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
-    },
-    {
-      provide: 'Logger',
-      useValue: logger,
     },
     AppService,
   ],

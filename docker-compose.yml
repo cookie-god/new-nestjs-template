@@ -1,52 +1,38 @@
-version: '3.8'
-
-networks:
-  opensearch-network:
-    driver: bridge
+version: '3.7'
 
 services:
-  opensearch:
-    image: opensearchproject/opensearch:latest
-    container_name: opensearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: elasticsearch
     environment:
-      - "discovery.type=single-node"
-      - "plugins.security.disabled=true"  # ✅ 보안 비활성화 (로그인 없이 사용 가능)
-      - "DISABLE_INSTALL_DEMO_CONFIG=true"  # ✅ 데모 설정 제거
-      - "DISABLE_SECURITY_PLUGIN=true"  # ✅ 보안 플러그인 비활성화
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      - discovery.type=single-node
+      - xpack.security.enabled=false
     ports:
       - "9200:9200"
-    networks:
-      - opensearch-network
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
 
-  opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
-    container_name: opensearch-dashboards
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.9
+    container_name: logstash
+    ports:
+      - "5000:5000"   # Logstash TCP input 포트
+      - "9600:9600"   # Logstash 모니터링 API (옵션)
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.9
+    container_name: kibana
     environment:
-      - "OPENSEARCH_HOSTS=http://opensearch:9200"  # ✅ 인증 없이 OpenSearch에 연결
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - "5601:5601"
     depends_on:
-      - opensearch
-    networks:
-      - opensearch-network
-
-  fluentd:
-    build:
-      context: ./fluentd
-      dockerfile: Dockerfile
-    container_name: fluentd
-    volumes:
-      - ./fluentd/fluent.conf:/fluentd/etc/fluent.conf
-      - ./logs:/var/log/app
-    depends_on:
-      - opensearch
-    networks:
-      - opensearch-network
+      - elasticsearch
 
   nestjs-app:
     container_name: nestjs-app
@@ -58,7 +44,7 @@ services:
     volumes:
       - ./logs:/app/logs
     depends_on:
-      - opensearch
-      - fluentd
-    networks:
-      - opensearch-network
+      - logstash
+
+volumes:
+  esdata:
