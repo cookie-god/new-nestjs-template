@@ -15,14 +15,13 @@ export class LoggingInterceptor implements NestInterceptor {
     const { method, url, body, query, params } = request;
     const startTime = Date.now();
 
-    logger.log(
-      'info',
+    logger.info(
       '=====================================================================================================',
     );
-    logger.log('info', `[Request] ${method} ${url}`);
-    logger.log('info', `[Query Params]:`, query);
-    logger.log('info', `[Path Variables]:`, params);
-    logger.log('info', `[Body]:`, body);
+    logger.info(`[Request] ${method} ${url}`);
+    logger.info('[Query Params] ', query);
+    logger.info('[Path Variables] ', params);
+    logger.info('[Body] ', body);
 
     return next.handle().pipe(
       tap((data) => {
@@ -30,13 +29,11 @@ export class LoggingInterceptor implements NestInterceptor {
         const statusCode = response.statusCode;
         const duration = Date.now() - startTime;
 
-        logger.log(
-          'info',
+        logger.info(
           `[Response] ${method} ${url} - Status: ${statusCode} - Time: ${duration}ms`,
         );
-        logger.log('info', `[Response Body]:`, data);
-        logger.log(
-          'info',
+        logger.info('[Response Body] ', data);
+        logger.info(
           '=====================================================================================================\n',
         );
       }),

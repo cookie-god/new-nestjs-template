@@ -14,7 +14,7 @@ export class HttpApiService {
     const response = await firstValueFrom(
       this.httpService.get<T>(url, { params, headers }),
     );
-    console.log(response);
+    // console.log(response);
     return response.data;
   }
 
@@ -26,7 +26,7 @@ export class HttpApiService {
     const response = await firstValueFrom(
       this.httpService.post<T>(url, data, { headers }),
     );
-    console.log(response);
+    // console.log(response);
     return response.data;
   }
 
