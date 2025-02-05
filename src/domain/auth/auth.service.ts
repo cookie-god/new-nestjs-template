@@ -9,7 +9,12 @@ import { ConfigService } from '@nestjs/config';
 import { logger } from 'src/config/logger/logger';
 import { ROLE } from 'src/enums/role.enum';
 import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
-import { InternalServiceException } from 'src/config/exception/service.exception';
+import {
+  DuplicateEmailException,
+  DuplicateNicknameException,
+  InternalServiceException,
+  ServiceException,
+} from 'src/config/exception/service.exception';
 import { PasswordUtil } from 'src/util/password.util';
 import { PostSignUpResponseDto } from './dto/request/post-sign-up-response.dto';
 
@@ -22,6 +27,9 @@ export class AuthService {
     private dataSource: DataSource,
   ) {}
 
+  /**
+   * 유저 회원가입 함수
+   */
   async createUsers(
     data: PostSignUpRequestDto,
   ): Promise<PostSignUpResponseDto> {
@@ -30,6 +38,24 @@ export class AuthService {
     await queryRunner.startTransaction();
 
     try {
+      // 이메일 중복 검사
+      if (
+        await this.authRepository.isExistEmail(data.email, queryRunner.manager)
+      ) {
+        throw DuplicateEmailException();
+      }
+
+      // 닉네임 중복 검사
+      if (
+        await this.authRepository.isExistNickname(
+          data.nickname,
+          queryRunner.manager,
+        )
+      ) {
+        throw DuplicateNicknameException();
+      }
+
+      // 유저 저장
       const userInfo: UserInfo = await this.authRepository.saveUser(
         this.makeUserInfoEntity(
           data.email,
@@ -47,7 +73,11 @@ export class AuthService {
       });
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw InternalServiceException();
+      if (error instanceof ServiceException) {
+        throw error;
+      } else {
+        throw InternalServiceException();
+      }
     } finally {
       await queryRunner.release();
     }

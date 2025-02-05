@@ -20,6 +20,31 @@ export class AuthRepository {
     return user;
   }
 
+  /**
+   * 이메일 중복 검사 함수
+   */
+  async isExistEmail(email: string, manager: EntityManager) {
+    const result: { exist: number } = await manager.query(
+      `SELECT EXISTS (SELECT 1 FROM USER_INFO WHERE email = ?) AS exist`,
+      [email],
+    );
+    return result[0]?.exist === 1;
+  }
+
+  /**
+   * 닉네임 중복 검사 함수
+   */
+  async isExistNickname(nickname: string, manager: EntityManager) {
+    const result: { exist: number } = await manager.query(
+      `SELECT EXISTS (SELECT 1 FROM USER_INFO WHERE nickname = ?) AS exist`,
+      [nickname],
+    );
+    return result[0]?.exist === 1;
+  }
+
+  /**
+   * 유저 저장 함수
+   */
   async saveUser(
     userInfo: UserInfo,
     manager: EntityManager,

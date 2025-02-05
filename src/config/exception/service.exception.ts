@@ -1,4 +1,6 @@
 import {
+  DUPLICATE_EMAIL,
+  DUPLICATE_NICKNAME,
   ErrorCode,
   EXPIRED_JWT,
   FAIL_SERVICE_CALL,
@@ -15,6 +17,16 @@ import {
   NOT_EXIST_ROLE,
   NOT_EXIST_USER,
 } from './error-code/error.code';
+
+export const DuplicateNicknameException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(DUPLICATE_NICKNAME, message);
+};
+
+export const DuplicateEmailException = (message?: string): ServiceException => {
+  return new ServiceException(DUPLICATE_EMAIL, message);
+};
 
 export const InvalidRoleException = (message?: string): ServiceException => {
   return new ServiceException(INVALID_ROLE, message);

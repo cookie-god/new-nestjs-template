@@ -33,6 +33,12 @@ export const NOT_EXIST_NICKNAME = new ErrorCodeVo(
 export const INVALID_NICKNAME = new ErrorCodeVo(400, 4055, 'invalid nickname');
 export const NOT_EXIST_ROLE = new ErrorCodeVo(400, 4056, 'not exist role');
 export const INVALID_ROLE = new ErrorCodeVo(400, 4057, 'invalid role');
+export const DUPLICATE_EMAIL = new ErrorCodeVo(404, 4058, 'duplicate email');
+export const DUPLICATE_NICKNAME = new ErrorCodeVo(
+  404,
+  4058,
+  'duplicate nickname',
+);
 
 export const FAIL_SERVICE_CALL = new ErrorCodeVo(
   500,
