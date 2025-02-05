@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
+import { FailServiceCallException } from 'src/config/exception/service.exception';
 import { logger } from 'src/config/logger/logger';
 
 @Injectable()
@@ -17,8 +18,8 @@ export class HttpApiService {
         '=====================================================================================================',
       );
       logger.info(`[Service Call] GET ${url}`);
-      logger.info('[Header] ', headers);
-      logger.info('[Query Params] ', params);
+      logger.info('[Header] ', { headers });
+      logger.info('[Query Params] ', { params });
       const response = await firstValueFrom(
         this.httpService.get<T>(url, { params, headers }),
       );
@@ -37,7 +38,7 @@ export class HttpApiService {
 
   async post<T>(
     url: string,
-    data: any,
+    body: any,
     headers?: Record<string, string>,
   ): Promise<T> {
     try {
@@ -45,13 +46,13 @@ export class HttpApiService {
         '=====================================================================================================',
       );
       logger.info(`[Service Call] POST ${url}`);
-      logger.info('[Header] ', headers);
-      logger.info('[Body] ', data);
+      logger.info('[Header] ', { headers });
+      logger.info('[Body] ', { body });
       logger.info(
         '=====================================================================================================',
       );
       const response = await firstValueFrom(
-        this.httpService.post<T>(url, data, { headers }),
+        this.httpService.post<T>(url, body, { headers }),
       );
       logger.info('[Response] ', response.data);
       logger.info(
@@ -59,13 +60,13 @@ export class HttpApiService {
       );
       return response.data;
     } catch (error) {
-      throw error;
+      throw FailServiceCallException(error.message);
     }
   }
 
   async put<T>(
     url: string,
-    data: any,
+    body: any,
     headers?: Record<string, string>,
   ): Promise<T> {
     try {
@@ -73,10 +74,10 @@ export class HttpApiService {
         '=====================================================================================================',
       );
       logger.info(`[Service Call] PUT ${url}`);
-      logger.info('[Header] ', headers);
-      logger.info('[Body] ', data);
+      logger.info('[Header] ', { headers });
+      logger.info('[Body] ', { body });
       const response = await firstValueFrom(
-        this.httpService.put<T>(url, data, { headers }),
+        this.httpService.put<T>(url, body, { headers }),
       );
       logger.info(
         '=====================================================================================================',
@@ -87,7 +88,7 @@ export class HttpApiService {
       );
       return response.data;
     } catch (error) {
-      throw error;
+      throw FailServiceCallException(error.message);
     }
   }
 
@@ -97,7 +98,7 @@ export class HttpApiService {
         '=====================================================================================================',
       );
       logger.info(`[Service Call] DELETE ${url}`);
-      logger.info('[Header] ', headers);
+      logger.info('[Header] ', { headers });
       const response = await firstValueFrom(
         this.httpService.delete<T>(url, { headers }),
       );
@@ -110,7 +111,7 @@ export class HttpApiService {
       );
       return response.data;
     } catch (error) {
-      throw error;
+      throw FailServiceCallException(error.message);
     }
   }
 }

@@ -17,6 +17,7 @@ import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-respo
 import { plainToInstance } from 'class-transformer';
 import { HttpApiService } from '../http-api/http-api.service';
 import { ConfigService } from '@nestjs/config';
+import { logger } from 'src/config/logger/logger';
 
 @Injectable()
 export class AuthService {
@@ -78,17 +79,10 @@ export class AuthService {
   async kakaoLogin(
     postKakaoLoginRequest: PostKakaoLoginRequestDto,
   ): Promise<PostKakaoLoginResponseDto> {
-    let kakaoUserResponse: KakaoUserResponse;
+    const kakaoUserResponse: KakaoUserResponse = await this.getKakaoUserInfo(
+      postKakaoLoginRequest.accessToken,
+    );
     let isExistUser = true;
-
-    try {
-      // 엑세스 토큰을 통해 카카오 정보 가져옴
-      kakaoUserResponse = await this.getKakaoUserInfo(
-        postKakaoLoginRequest.accessToken,
-      );
-    } catch (error) {
-      throw FailServiceCallException();
-    }
 
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -187,7 +181,8 @@ export class AuthService {
       );
       return response.access_token;
     } catch (error) {
-      throw error;
+      logger.error(error);
+      throw FailServiceCallException();
     }
   }
 
@@ -206,7 +201,8 @@ export class AuthService {
         headers,
       );
     } catch (error) {
-      throw error;
+      logger.error(error);
+      throw FailServiceCallException();
     }
   }
 }
