@@ -6,34 +6,15 @@ export class UserInfo extends BaseEntity {
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
   id: number;
 
-  @Column({ name: 'sns_type', type: 'varchar', length: 20, nullable: false })
-  snsType: string;
+  @Column({ name: 'email', type: 'varchar', length: 255, nullable: false })
+  email: string;
 
-  @Column({ name: 'sns_id', type: 'bigint', nullable: false })
-  snsId: number;
+  @Column({ name: 'password', type: 'varchar', length: 255, nullable: false })
+  password: string;
 
-  @Column({
-    name: 'policy_agreement_date',
-    type: 'timestamp',
-    nullable: false,
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  policyAgreementDate: Date;
+  @Column({ name: 'nickname', type: 'varchar', length: 50, nullable: false })
+  nickname: string;
 
-  @Column({
-    name: 'terms_agreement_date',
-    type: 'timestamp',
-    nullable: false,
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  termsAgreementDate: Date;
-
-  @Column({ name: 'fcm_token', type: 'varchar', length: 512, nullable: true })
-  fcmToken?: string;
-
-  @Column({ name: 'alarm_time', type: 'time', nullable: true })
-  alarmTime?: string;
-
-  @Column({ name: 'goal_page', type: 'int', nullable: true })
-  goalPage?: number;
+  @Column({ name: 'role', type: 'varchar', length: 50, nullable: false })
+  role: string;
 }

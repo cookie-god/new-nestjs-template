@@ -3,10 +3,58 @@ import {
   EXPIRED_JWT,
   FAIL_SERVICE_CALL,
   INTERNAL_SERVER_ERROR,
+  INVALID_EMAIL,
   INVALID_JWT,
+  INVALID_NICKNAME,
+  INVALID_PASSWORD,
+  INVALID_ROLE,
+  NOT_EXIST_EMAIL,
   NOT_EXIST_JWT,
+  NOT_EXIST_NICKNAME,
+  NOT_EXIST_PASSWORD,
+  NOT_EXIST_ROLE,
   NOT_EXIST_USER,
 } from './error-code/error.code';
+
+export const InvalidRoleException = (message?: string): ServiceException => {
+  return new ServiceException(INVALID_ROLE, message);
+};
+
+export const NotExistRoleException = (message?: string): ServiceException => {
+  return new ServiceException(NOT_EXIST_ROLE, message);
+};
+
+export const InvalidNicknameException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(INVALID_NICKNAME, message);
+};
+
+export const NotExistNicknameException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(NOT_EXIST_NICKNAME, message);
+};
+
+export const InvalidPasswordException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(INVALID_PASSWORD, message);
+};
+
+export const NotExistPasswordException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(NOT_EXIST_PASSWORD, message);
+};
+
+export const InvalidEmailException = (message?: string): ServiceException => {
+  return new ServiceException(INVALID_EMAIL, message);
+};
+
+export const NotExistEmailException = (message?: string): ServiceException => {
+  return new ServiceException(NOT_EXIST_EMAIL, message);
+};
 
 export const NotExistUserException = (message?: string): ServiceException => {
   return new ServiceException(NOT_EXIST_USER, message);

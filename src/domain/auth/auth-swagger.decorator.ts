@@ -1,22 +1,32 @@
 import { applyDecorators } from '@nestjs/common';
 import {
+  ApiBody,
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 import { CommonResponse } from 'src/config/response/common.response';
-import { INTERNAL_SERVER_ERROR } from 'src/config/exception/error-code/error.code';
+import {
+  INTERNAL_SERVER_ERROR,
+  INVALID_EMAIL,
+  INVALID_NICKNAME,
+  INVALID_PASSWORD,
+  NOT_EXIST_EMAIL,
+  NOT_EXIST_NICKNAME,
+  NOT_EXIST_PASSWORD,
+} from 'src/config/exception/error-code/error.code';
+import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
+import { PostSignUpResponseDto } from './dto/request/post-sign-up-response.dto';
 
-export function KakaoLoginSwaggerDecorator() {
+export function PostSignUpSwaggerDecorator() {
   return applyDecorators(
     ApiOperation({
-      summary: '카카오 로그인 API',
-      description:
-        '카카오 로그인을 통해서 기존 회원은 로그인, 기존 회원이 아니면 회원가입 처리를 합니다. 회원가입시 알림시간은 null, 목표 페이지는 0으로 초기화 됩니다.',
+      summary: '회원 가입 API',
+      description: '회원 가입을 진행하는 API 입니다.',
     }),
-    ApiExtraModels(CommonResponse, PostKakaoLoginResponseDto),
+    ApiExtraModels(CommonResponse, PostSignUpResponseDto),
+    ApiBody({ type: PostSignUpRequestDto }),
     ApiResponse({
       status: 2000,
       description: '요청 성공',
@@ -25,10 +35,76 @@ export function KakaoLoginSwaggerDecorator() {
           { $ref: getSchemaPath(CommonResponse) },
           {
             properties: {
-              data: { $ref: getSchemaPath(PostKakaoLoginResponseDto) },
+              data: { $ref: getSchemaPath(PostSignUpResponseDto) },
             },
           },
         ],
+      },
+    }),
+    ApiResponse({
+      status: NOT_EXIST_EMAIL.code,
+      description: NOT_EXIST_EMAIL.message,
+      schema: {
+        example: {
+          status: NOT_EXIST_EMAIL.status,
+          code: NOT_EXIST_EMAIL.code,
+          message: NOT_EXIST_EMAIL.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: INVALID_EMAIL.code,
+      description: INVALID_EMAIL.message,
+      schema: {
+        example: {
+          status: INVALID_EMAIL.status,
+          code: INVALID_EMAIL.code,
+          message: INVALID_EMAIL.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: NOT_EXIST_PASSWORD.code,
+      description: NOT_EXIST_PASSWORD.message,
+      schema: {
+        example: {
+          status: NOT_EXIST_PASSWORD.status,
+          code: NOT_EXIST_PASSWORD.code,
+          message: NOT_EXIST_PASSWORD.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: INVALID_PASSWORD.code,
+      description: INVALID_PASSWORD.message,
+      schema: {
+        example: {
+          status: INVALID_PASSWORD.status,
+          code: INVALID_PASSWORD.code,
+          message: INVALID_PASSWORD.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: NOT_EXIST_NICKNAME.code,
+      description: NOT_EXIST_NICKNAME.message,
+      schema: {
+        example: {
+          status: NOT_EXIST_NICKNAME.status,
+          code: NOT_EXIST_NICKNAME.code,
+          message: NOT_EXIST_NICKNAME.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: INVALID_NICKNAME.code,
+      description: INVALID_NICKNAME.message,
+      schema: {
+        example: {
+          status: INVALID_NICKNAME.status,
+          code: INVALID_NICKNAME.code,
+          message: INVALID_NICKNAME.message,
+        },
       },
     }),
     ApiResponse({

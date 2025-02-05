@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,12 +7,10 @@ import { AuthRepository } from './auth.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt/jwt.strategy';
-import { HttpApiService } from '../http-api/http-api.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserInfo]),
-    HttpModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET_KEY'),
@@ -25,6 +22,6 @@ import { HttpApiService } from '../http-api/http-api.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, HttpApiService, AuthRepository, JwtStrategy],
+  providers: [AuthService, AuthRepository, JwtStrategy],
 })
 export class AuthModule {}
