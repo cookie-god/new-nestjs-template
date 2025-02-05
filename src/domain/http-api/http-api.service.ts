@@ -1,6 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
+import { FailServiceCallException } from 'src/config/exception/service.exception';
+import { logger } from 'src/config/logger/logger';
 
 @Injectable()
 export class HttpApiService {
@@ -11,11 +13,24 @@ export class HttpApiService {
     params?: Record<string, any>,
     headers?: Record<string, string>,
   ): Promise<T> {
-    const response = await firstValueFrom(
-      this.httpService.get<T>(url, { params, headers }),
-    );
-    // console.log(response);
-    return response.data;
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get<T>(url, { params, headers }),
+      );
+      logger.info(
+        '=====================================================================================================',
+      );
+      logger.info(`[Service Call] GET ${url}`);
+      logger.info('[Header] ', headers);
+      logger.info('[Query Params] ', params);
+      logger.info('[Response] ', response.data);
+      logger.info(
+        '=====================================================================================================',
+      );
+      return response.data;
+    } catch (error) {
+      throw FailServiceCallException(error.message);
+    }
   }
 
   async post<T>(
@@ -23,11 +38,24 @@ export class HttpApiService {
     data: any,
     headers?: Record<string, string>,
   ): Promise<T> {
-    const response = await firstValueFrom(
-      this.httpService.post<T>(url, data, { headers }),
-    );
-    // console.log(response);
-    return response.data;
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post<T>(url, data, { headers }),
+      );
+      logger.info(
+        '=====================================================================================================',
+      );
+      logger.info(`[Service Call] POST ${url}`);
+      logger.info('[Header] ', headers);
+      logger.info('[Body] ', data);
+      logger.info('[Response] ', response.data);
+      logger.info(
+        '=====================================================================================================',
+      );
+      return response.data;
+    } catch (error) {
+      throw FailServiceCallException(error.message);
+    }
   }
 
   async put<T>(
@@ -35,16 +63,43 @@ export class HttpApiService {
     data: any,
     headers?: Record<string, string>,
   ): Promise<T> {
-    const response = await firstValueFrom(
-      this.httpService.put<T>(url, data, { headers }),
-    );
-    return response.data;
+    try {
+      const response = await firstValueFrom(
+        this.httpService.put<T>(url, data, { headers }),
+      );
+      logger.info(
+        '=====================================================================================================',
+      );
+      logger.info(`[Service Call] PUT ${url}`);
+      logger.info('[Header] ', headers);
+      logger.info('[Body] ', data);
+      logger.info('[Response] ', response.data);
+      logger.info(
+        '=====================================================================================================',
+      );
+      return response.data;
+    } catch (error) {
+      throw FailServiceCallException(error.message);
+    }
   }
 
   async delete<T>(url: string, headers?: Record<string, string>): Promise<T> {
-    const response = await firstValueFrom(
-      this.httpService.delete<T>(url, { headers }),
-    );
-    return response.data;
+    try {
+      const response = await firstValueFrom(
+        this.httpService.delete<T>(url, { headers }),
+      );
+      logger.info(
+        '=====================================================================================================',
+      );
+      logger.info(`[Service Call] DELETE ${url}`);
+      logger.info('[Header] ', headers);
+      logger.info('[Response] ', response.data);
+      logger.info(
+        '=====================================================================================================',
+      );
+      return response.data;
+    } catch (error) {
+      throw FailServiceCallException(error.message);
+    }
   }
 }

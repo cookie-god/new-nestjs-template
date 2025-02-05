@@ -37,7 +37,6 @@ export class AuthService {
   ): Promise<PostUsersResponseDto> {
     const accessToken: string =
       await this.getKakaoAccessToken(kakaoAuthResCode);
-    console.log(accessToken);
     const kakaoUserResponse: KakaoUserResponse =
       await this.getKakaoUserInfo(accessToken);
     return {

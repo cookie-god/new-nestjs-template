@@ -12,6 +12,7 @@ import {
   INTERNAL_SERVER_ERROR,
   NOT_EXIST_USER,
 } from '../exception/error-code/error.code';
+import { logger } from '../logger/logger';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -19,10 +20,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
+    logger.error(exception);
     if (exception instanceof ServiceException) {
       // 서비스에서 발생한 에러인 경우
       const status = exception.errorCode.status;
       const code = exception.errorCode.code;
+
       response.status(status).json({
         status: status,
         code: code,
@@ -34,7 +37,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const status = errorCode.status;
       const code = errorCode.code;
 
-      // console.log(exception);
       response.status(status).json({
         status: status,
         code: code,
@@ -46,7 +48,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const status = errorCode.status;
       const code = errorCode.code;
 
-      // console.log(exception);
       response.status(status).json({
         status: status,
         code: code,
