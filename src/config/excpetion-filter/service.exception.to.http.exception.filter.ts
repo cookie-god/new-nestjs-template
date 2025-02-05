@@ -20,12 +20,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    logger.error(exception);
     if (exception instanceof ServiceException) {
       // 서비스에서 발생한 에러인 경우
       const status = exception.errorCode.status;
       const code = exception.errorCode.code;
 
+      logger.error(exception.stack);
       response.status(status).json({
         status: status,
         code: code,
@@ -37,6 +37,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const status = errorCode.status;
       const code = errorCode.code;
 
+      logger.error(exception.message);
       response.status(status).json({
         status: status,
         code: code,
@@ -48,6 +49,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const status = errorCode.status;
       const code = errorCode.code;
 
+      logger.error(exception);
       response.status(status).json({
         status: status,
         code: code,

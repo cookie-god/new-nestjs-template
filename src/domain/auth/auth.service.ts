@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import {
   FailServiceCallException,
   InternalServiceException,
 } from 'src/config/exception/service.exception';
+import { KakaoUserResponse } from 'src/domain/auth/interface/kakao-user.interface';
 import { PostUsersResponseDto } from './dto/response/post-users.response.dto';
 
 import { PostKakaoLoginTestRequestDto } from './dto/request/post-kakao-login-test-request.dto';
@@ -15,7 +15,6 @@ import { payload } from './interface/user-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { PostKakaoLoginResponseDto } from './dto/response/post-kakao-login-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { KakaoUserResponse } from './interface/kakao-user.interface';
 import { HttpApiService } from '../http-api/http-api.service';
 import { ConfigService } from '@nestjs/config';
 
@@ -35,13 +34,17 @@ export class AuthService {
   async retrieveAccessToken(
     kakaoAuthResCode: string,
   ): Promise<PostUsersResponseDto> {
-    const accessToken: string =
-      await this.getKakaoAccessToken(kakaoAuthResCode);
-    const kakaoUserResponse: KakaoUserResponse =
-      await this.getKakaoUserInfo(accessToken);
-    return {
-      id: kakaoUserResponse.id,
-    } as PostUsersResponseDto;
+    try {
+      const accessToken: string =
+        await this.getKakaoAccessToken(kakaoAuthResCode);
+      const kakaoUserResponse: KakaoUserResponse =
+        await this.getKakaoUserInfo(accessToken);
+      return {
+        id: kakaoUserResponse.id,
+      } as PostUsersResponseDto;
+    } catch (error) {
+      throw FailServiceCallException();
+    }
   }
 
   /**
@@ -50,12 +53,16 @@ export class AuthService {
   async retrieveSnsId(
     postKakaoLoginTestRequest: PostKakaoLoginTestRequestDto,
   ): Promise<PostUsersResponseDto> {
-    const accessToken: string = postKakaoLoginTestRequest.accessToken;
-    const kakaoUserResponse: KakaoUserResponse =
-      await this.getKakaoUserInfo(accessToken);
-    return {
-      id: kakaoUserResponse.id,
-    } as PostUsersResponseDto;
+    try {
+      const accessToken: string = postKakaoLoginTestRequest.accessToken;
+      const kakaoUserResponse: KakaoUserResponse =
+        await this.getKakaoUserInfo(accessToken);
+      return {
+        id: kakaoUserResponse.id,
+      } as PostUsersResponseDto;
+    } catch (error) {
+      throw FailServiceCallException();
+    }
   }
 
   /**
@@ -71,16 +78,22 @@ export class AuthService {
   async kakaoLogin(
     postKakaoLoginRequest: PostKakaoLoginRequestDto,
   ): Promise<PostKakaoLoginResponseDto> {
+    let kakaoUserResponse: KakaoUserResponse;
+    let isExistUser = true;
+
+    try {
+      // 엑세스 토큰을 통해 카카오 정보 가져옴
+      kakaoUserResponse = await this.getKakaoUserInfo(
+        postKakaoLoginRequest.accessToken,
+      );
+    } catch (error) {
+      throw FailServiceCallException();
+    }
+
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      // 엑세스 토큰을 통해 카카오 정보 가져옴
-      const kakaoUserResponse: KakaoUserResponse = await this.getKakaoUserInfo(
-        postKakaoLoginRequest.accessToken,
-      );
-      let flag = false;
-
       // sns id를 토대로 DB로부터 유저 정보를 확인함
       let userInfo: UserInfo | null = await this.authRepository.findUserBySnsId(
         kakaoUserResponse.id,
@@ -93,7 +106,7 @@ export class AuthService {
           this.makeUserInfoEntity(kakaoUserResponse.id),
           queryRunner.manager,
         );
-        flag = true; // 회원가입
+        isExistUser = false; // 회원가입
       }
 
       // 페이로드 생성
@@ -110,7 +123,7 @@ export class AuthService {
         token: token,
         goalPage: userInfo.goalPage,
         alarmTime: userInfo.alarmTime,
-        flag: flag,
+        isExistUser: isExistUser,
       });
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -118,6 +131,26 @@ export class AuthService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  /**
+   * jwt 토큰을 만들어 주는 함수
+   */
+  async makeAccessToken(
+    userInfo: UserInfo,
+  ): Promise<PostKakaoLoginResponseDto> {
+    // 페이로드 생성
+    const payload: payload = {
+      id: userInfo.id,
+    };
+    // jwt 생성
+    const token = this.jwtService.sign(payload);
+    return plainToInstance(PostKakaoLoginResponseDto, {
+      token: token,
+      goalPage: userInfo.goalPage,
+      alarmTime: userInfo.alarmTime,
+      flag: false,
+    });
   }
 
   /**
@@ -136,36 +169,44 @@ export class AuthService {
    * 인가 코드를 통해 엑세스 토큰을 가져오는 함수
    */
   async getKakaoAccessToken(code: string): Promise<string> {
-    const kakaoUrl = 'https://kauth.kakao.com/oauth/token';
-    const payload = {
-      grant_type: 'authorization_code',
-      client_id: this.configService.get<string>('KAKAO_REST_API_KEY'),
-      redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI'),
-      code: code,
-    };
-    const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    };
-    const response = await this.httpApiService.post<{ access_token: string }>(
-      kakaoUrl,
-      payload,
-      headers,
-    );
-    return response.access_token;
+    try {
+      const kakaoUrl = 'https://kauth.kakao.com/oauth/token';
+      const payload = {
+        grant_type: 'authorization_code',
+        client_id: this.configService.get<string>('KAKAO_REST_API_KEY'),
+        redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI'),
+        code: code,
+      };
+      const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+      const response = await this.httpApiService.post<{ access_token: string }>(
+        kakaoUrl,
+        payload,
+        headers,
+      );
+      return response.access_token;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
    * 엑세스 토큰을 통해 카카오 유저 정보를 가져오는 함수
    */
   async getKakaoUserInfo(accessToken: string): Promise<KakaoUserResponse> {
-    const kakaoUrl = 'https://kapi.kakao.com/v2/user/me';
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-    };
-    return await this.httpApiService.get<KakaoUserResponse>(
-      kakaoUrl,
-      {},
-      headers,
-    );
+    try {
+      const kakaoUrl = 'https://kapi.kakao.com/v2/user/me';
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      return await this.httpApiService.get<KakaoUserResponse>(
+        kakaoUrl,
+        {},
+        headers,
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 }
