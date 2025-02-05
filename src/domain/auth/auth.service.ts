@@ -136,44 +136,36 @@ export class AuthService {
    * 인가 코드를 통해 엑세스 토큰을 가져오는 함수
    */
   async getKakaoAccessToken(code: string): Promise<string> {
-    try {
-      const kakaoUrl = 'https://kauth.kakao.com/oauth/token';
-      const payload = {
-        grant_type: 'authorization_code',
-        client_id: this.configService.get<string>('KAKAO_REST_API_KEY'),
-        redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI'),
-        code: code,
-      };
-      const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      };
-      const response = await this.httpApiService.post<{ access_token: string }>(
-        kakaoUrl,
-        payload,
-        headers,
-      );
-      return response.access_token;
-    } catch (error) {
-      throw FailServiceCallException(error.message);
-    }
+    const kakaoUrl = 'https://kauth.kakao.com/oauth/token';
+    const payload = {
+      grant_type: 'authorization_code',
+      client_id: this.configService.get<string>('KAKAO_REST_API_KEY'),
+      redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI'),
+      code: code,
+    };
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    const response = await this.httpApiService.post<{ access_token: string }>(
+      kakaoUrl,
+      payload,
+      headers,
+    );
+    return response.access_token;
   }
 
   /**
    * 엑세스 토큰을 통해 카카오 유저 정보를 가져오는 함수
    */
   async getKakaoUserInfo(accessToken: string): Promise<KakaoUserResponse> {
-    try {
-      const kakaoUrl = 'https://kapi.kakao.com/v2/user/me';
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-      return await this.httpApiService.get<KakaoUserResponse>(
-        kakaoUrl,
-        {},
-        headers,
-      );
-    } catch (error) {
-      throw FailServiceCallException();
-    }
+    const kakaoUrl = 'https://kapi.kakao.com/v2/user/me';
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+    };
+    return await this.httpApiService.get<KakaoUserResponse>(
+      kakaoUrl,
+      {},
+      headers,
+    );
   }
 }

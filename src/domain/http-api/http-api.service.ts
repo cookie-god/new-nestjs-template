@@ -14,15 +14,18 @@ export class HttpApiService {
     headers?: Record<string, string>,
   ): Promise<T> {
     try {
-      const response = await firstValueFrom(
-        this.httpService.get<T>(url, { params, headers }),
-      );
       logger.info(
         '=====================================================================================================',
       );
       logger.info(`[Service Call] GET ${url}`);
       logger.info('[Header] ', headers);
       logger.info('[Query Params] ', params);
+      const response = await firstValueFrom(
+        this.httpService.get<T>(url, { params, headers }),
+      );
+      logger.info(
+        '=====================================================================================================',
+      );
       logger.info('[Response] ', response.data);
       logger.info(
         '=====================================================================================================',
@@ -39,15 +42,18 @@ export class HttpApiService {
     headers?: Record<string, string>,
   ): Promise<T> {
     try {
-      const response = await firstValueFrom(
-        this.httpService.post<T>(url, data, { headers }),
-      );
       logger.info(
         '=====================================================================================================',
       );
       logger.info(`[Service Call] POST ${url}`);
       logger.info('[Header] ', headers);
       logger.info('[Body] ', data);
+      logger.info(
+        '=====================================================================================================',
+      );
+      const response = await firstValueFrom(
+        this.httpService.post<T>(url, data, { headers }),
+      );
       logger.info('[Response] ', response.data);
       logger.info(
         '=====================================================================================================',
@@ -64,15 +70,18 @@ export class HttpApiService {
     headers?: Record<string, string>,
   ): Promise<T> {
     try {
-      const response = await firstValueFrom(
-        this.httpService.put<T>(url, data, { headers }),
-      );
       logger.info(
         '=====================================================================================================',
       );
       logger.info(`[Service Call] PUT ${url}`);
       logger.info('[Header] ', headers);
       logger.info('[Body] ', data);
+      const response = await firstValueFrom(
+        this.httpService.put<T>(url, data, { headers }),
+      );
+      logger.info(
+        '=====================================================================================================',
+      );
       logger.info('[Response] ', response.data);
       logger.info(
         '=====================================================================================================',
@@ -85,14 +94,17 @@ export class HttpApiService {
 
   async delete<T>(url: string, headers?: Record<string, string>): Promise<T> {
     try {
+      logger.info(
+        '=====================================================================================================',
+      );
+      logger.info(`[Service Call] DELETE ${url}`);
+      logger.info('[Header] ', headers);
       const response = await firstValueFrom(
         this.httpService.delete<T>(url, { headers }),
       );
       logger.info(
         '=====================================================================================================',
       );
-      logger.info(`[Service Call] DELETE ${url}`);
-      logger.info('[Header] ', headers);
       logger.info('[Response] ', response.data);
       logger.info(
         '=====================================================================================================',
