@@ -36,7 +36,7 @@ export const INVALID_ROLE = new ErrorCodeVo(400, 4057, 'invalid role');
 export const DUPLICATE_EMAIL = new ErrorCodeVo(404, 4058, 'duplicate email');
 export const DUPLICATE_NICKNAME = new ErrorCodeVo(
   404,
-  4058,
+  4059,
   'duplicate nickname',
 );
 

@@ -8,6 +8,8 @@ import {
 } from '@nestjs/swagger';
 import { CommonResponse } from 'src/config/response/common.response';
 import {
+  DUPLICATE_EMAIL,
+  DUPLICATE_NICKNAME,
   INTERNAL_SERVER_ERROR,
   INVALID_EMAIL,
   INVALID_NICKNAME,
@@ -104,6 +106,28 @@ export function PostSignUpSwaggerDecorator() {
           status: INVALID_NICKNAME.status,
           code: INVALID_NICKNAME.code,
           message: INVALID_NICKNAME.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: DUPLICATE_EMAIL.code,
+      description: DUPLICATE_EMAIL.message,
+      schema: {
+        example: {
+          status: DUPLICATE_EMAIL.status,
+          code: DUPLICATE_EMAIL.code,
+          message: DUPLICATE_EMAIL.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: DUPLICATE_NICKNAME.code,
+      description: DUPLICATE_NICKNAME.message,
+      schema: {
+        example: {
+          status: DUPLICATE_NICKNAME.status,
+          code: DUPLICATE_NICKNAME.code,
+          message: DUPLICATE_NICKNAME.message,
         },
       },
     }),

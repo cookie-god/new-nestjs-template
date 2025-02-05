@@ -72,6 +72,7 @@ export class AuthService {
         role: userInfo.role,
       });
     } catch (error) {
+      logger.error(error);
       await queryRunner.rollbackTransaction();
       if (error instanceof ServiceException) {
         throw error;
