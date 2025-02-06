@@ -33,6 +33,8 @@ export class JwtRefreshTokenGuard extends AuthGuard('refresh_token') {
         throw ExpiredRefreshTokenException();
       } else if (info?.name === 'JsonWebTokenError') {
         throw InvalidRefreshTokenException();
+      } else if (err) {
+        throw InvalidRefreshTokenException();
       } else if (user === undefined) {
         throw NotExistUserException();
       }

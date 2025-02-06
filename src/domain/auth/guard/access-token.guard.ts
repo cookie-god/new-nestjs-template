@@ -33,6 +33,8 @@ export class JwtAccessTokenGuard extends AuthGuard('access_token') {
         throw ExpiredAccessTokenException();
       } else if (info?.name === 'JsonWebTokenError') {
         throw InvalidAccessTokenException();
+      } else if (err) {
+        throw InvalidAccessTokenException();
       } else if (user === undefined) {
         throw NotExistUserException();
       }
