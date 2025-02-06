@@ -1,7 +1,7 @@
-import { Controller, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
+  PostRefreshTokenSwaggerDecorator,
   PostSignInSwaggerDecorator,
   PostSignUpSwaggerDecorator,
 } from './auth-swagger.decorator';
@@ -12,6 +12,11 @@ import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto'
 import { plainToClass } from 'class-transformer';
 import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
 import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
+import { User } from 'src/decorator/user.decorator';
+import { PostAccessTokenResponseDto } from './dto/response/post-refresh-token-response.dto';
+import { UserInfo } from 'src/entity/user.entity';
+import { ApiTags } from '@nestjs/swagger';
+import { JwtRefreshTokenGuard } from './guard/refresh-token.guard';
 
 @ApiTags('AUTH')
 @Controller('auth')
@@ -37,6 +42,20 @@ export class AuthController {
     return plainToClass(CommonResponse<PostSignInResponseDto>, {
       status: 201,
       data: await this.authService.login(data),
+    });
+  }
+
+  @PostRefreshTokenSwaggerDecorator()
+  @UseGuards(JwtRefreshTokenGuard)
+  @Post('refresh')
+  async postRefreshToken(
+    @User() user: UserInfo,
+  ): Promise<CommonResponse<PostAccessTokenResponseDto>> {
+    return plainToClass(CommonResponse<PostAccessTokenResponseDto>, {
+      status: 201,
+      data: plainToClass(PostAccessTokenResponseDto, {
+        accessToken: await this.authService.createAccessToken(user),
+      }),
     });
   }
 }

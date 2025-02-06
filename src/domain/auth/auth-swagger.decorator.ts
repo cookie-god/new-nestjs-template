@@ -1,5 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiExtraModels,
   ApiOperation,
@@ -10,13 +11,16 @@ import { CommonResponse } from 'src/config/response/common.response';
 import {
   DUPLICATE_EMAIL,
   DUPLICATE_NICKNAME,
+  EXPIRED_REFRESH_TOKEN,
   INTERNAL_SERVER_ERROR,
   INVALID_EMAIL,
   INVALID_NICKNAME,
   INVALID_PASSWORD,
+  INVALID_REFRESH_TOKEN,
   NOT_EXIST_EMAIL,
   NOT_EXIST_NICKNAME,
   NOT_EXIST_PASSWORD,
+  NOT_EXIST_REFRESH_TOKEN,
   NOT_EXIST_USER,
   NOT_MATCH_PASSWORD,
 } from 'src/config/exception/error-code/error.code';
@@ -24,6 +28,7 @@ import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
 import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
 import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
 import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
+import { PostAccessTokenResponseDto } from './dto/response/post-refresh-token-response.dto';
 
 export function PostSignUpSwaggerDecorator() {
   return applyDecorators(
@@ -235,6 +240,87 @@ export function PostSignInSwaggerDecorator() {
           status: NOT_MATCH_PASSWORD.status,
           code: NOT_MATCH_PASSWORD.code,
           message: NOT_MATCH_PASSWORD.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: INTERNAL_SERVER_ERROR.code,
+      description: INTERNAL_SERVER_ERROR.message,
+      schema: {
+        example: {
+          status: INTERNAL_SERVER_ERROR.status,
+          code: INTERNAL_SERVER_ERROR.code,
+          message: INTERNAL_SERVER_ERROR.message,
+        },
+      },
+    }),
+  );
+}
+
+export function PostRefreshTokenSwaggerDecorator() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Access Token 발급 API',
+      description:
+        'Refresh Token을 통해 Access Token을 재발급 받는 API 입니다.',
+    }),
+    ApiExtraModels(CommonResponse, PostAccessTokenResponseDto),
+    ApiBearerAuth('JWT'),
+    ApiResponse({
+      status: 2000,
+      description: '요청 성공',
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(CommonResponse) },
+          {
+            properties: {
+              data: { $ref: getSchemaPath(PostAccessTokenResponseDto) },
+            },
+          },
+        ],
+      },
+    }),
+    ApiResponse({
+      status: NOT_EXIST_USER.code,
+      description: NOT_EXIST_USER.message,
+      schema: {
+        example: {
+          status: NOT_EXIST_USER.status,
+          code: NOT_EXIST_USER.code,
+          message: NOT_EXIST_USER.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: NOT_EXIST_REFRESH_TOKEN.code,
+      description: NOT_EXIST_REFRESH_TOKEN.message,
+      schema: {
+        example: {
+          status: NOT_EXIST_REFRESH_TOKEN.status,
+          code: NOT_EXIST_REFRESH_TOKEN.code,
+          message: NOT_EXIST_REFRESH_TOKEN.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: INVALID_REFRESH_TOKEN.code,
+      description: INVALID_REFRESH_TOKEN.message,
+      schema: {
+        example: {
+          status: INVALID_REFRESH_TOKEN.status,
+          code: INVALID_REFRESH_TOKEN.code,
+          message: INVALID_REFRESH_TOKEN.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: EXPIRED_REFRESH_TOKEN.code,
+      description: EXPIRED_REFRESH_TOKEN.message,
+      schema: {
+        example: {
+          status: EXPIRED_REFRESH_TOKEN.status,
+          code: EXPIRED_REFRESH_TOKEN.code,
+          message: EXPIRED_REFRESH_TOKEN.message,
         },
       },
     }),
