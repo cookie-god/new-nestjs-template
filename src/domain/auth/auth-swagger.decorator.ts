@@ -262,7 +262,7 @@ export function PostRefreshTokenSwaggerDecorator() {
     ApiOperation({
       summary: 'Access Token 발급 API',
       description:
-        'Refresh Token을 통해 Access Token을 재발급 받는 API 입니다.',
+        'Refresh Token을 통해 Access Token을 재발급 받는 API 입니다. header에 refresh token을 넣어서 요청주세요.',
     }),
     ApiExtraModels(CommonResponse, PostAccessTokenResponseDto),
     ApiBearerAuth('JWT'),
