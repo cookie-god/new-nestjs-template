@@ -19,7 +19,14 @@ import {
   NOT_EXIST_REFRESH_TOKEN,
   NOT_EXIST_ROLE,
   NOT_EXIST_USER,
+  NOT_MATCH_PASSWORD,
 } from './error-code/error.code';
+
+export const NotMatchPasswordException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(NOT_MATCH_PASSWORD, message);
+};
 
 export const DuplicateNicknameException = (
   message?: string,

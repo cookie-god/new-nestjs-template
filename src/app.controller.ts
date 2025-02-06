@@ -1,17 +1,17 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 
 import { AppService } from './app.service';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { UserInfo } from './entity/user.entity';
 import { User } from './decorator/user.decorator';
-import { JwtAuthGuard } from './domain/auth/jwt/jwt.guard';
+import { JwtAccessTokenGuard } from './domain/auth/guard/access-token.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @UseGuards(JwtAccessTokenGuard)
   @ApiBearerAuth('JWT')
-  @UseGuards(JwtAuthGuard)
   @Get()
   async getHello(@User() userInfo: UserInfo): Promise<UserInfo> {
     return userInfo;

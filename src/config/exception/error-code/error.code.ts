@@ -66,6 +66,11 @@ export const DUPLICATE_NICKNAME = new ErrorCodeVo(
   4059,
   'duplicate nickname',
 );
+export const NOT_MATCH_PASSWORD = new ErrorCodeVo(
+  404,
+  4060,
+  'not match password',
+);
 
 export const FAIL_SERVICE_CALL = new ErrorCodeVo(
   500,

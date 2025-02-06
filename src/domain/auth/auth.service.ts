@@ -3,7 +3,7 @@ import { UserInfo } from 'src/entity/user.entity';
 import { AuthRepository } from './auth.repository';
 import { DataSource, QueryRunner } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { ConfigService } from '@nestjs/config';
 import { logger } from 'src/config/logger/logger';
 import { ROLE } from 'src/enums/role.enum';
@@ -13,13 +13,17 @@ import {
   DuplicateNicknameException,
   InternalServiceException,
   NotExistRefreshTokenException,
+  NotExistUserException,
+  NotMatchPasswordException,
   ServiceException,
 } from 'src/config/exception/service.exception';
-import { PasswordUtil } from 'src/util/password.util';
-import { PostSignUpResponseDto } from './dto/request/post-sign-up-response.dto';
+import { BcrypUtil } from 'src/util/bcrypt.util';
+import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
 import * as bcrypt from 'bcrypt';
 import { AccessPayload } from './interface/access-payload.interface';
 import { RefreshPayload } from './interface/refresh-payload.interface';
+import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
+import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -69,7 +73,7 @@ export class AuthService {
       const userInfo: UserInfo = await this.authRepository.saveUser(
         this.makeUserInfoEntity(
           data.email,
-          await PasswordUtil.hashPassword(data.password),
+          await BcrypUtil.hash(data.password),
           data.nickname,
         ),
         queryRunner.manager,
@@ -91,6 +95,53 @@ export class AuthService {
       }
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  /**
+   * 로그인 함수
+   */
+  async login(data: PostSignInRequestDto): Promise<PostSignInResponseDto> {
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    queryRunner.connect();
+    try {
+      const userInfo: UserInfo = await this.authRepository.findUserInfoByEmail(
+        data.email,
+        queryRunner.manager,
+      );
+      if (userInfo === null) {
+        throw NotExistUserException();
+      }
+
+      if (!(await BcrypUtil.compare(data.password, userInfo.password))) {
+        throw NotMatchPasswordException();
+      }
+      const accessToken = await this.createAccessToken(userInfo);
+      const refreshToken = await this.createRefreshToken(userInfo);
+      const hashedRefreshToken = await BcrypUtil.hash(refreshToken);
+
+      await this.authRepository.editUserRefreshToken(
+        userInfo.id,
+        hashedRefreshToken,
+        queryRunner.manager,
+      );
+
+      return plainToClass(PostSignInResponseDto, {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        email: userInfo.email,
+        nickname: userInfo.nickname,
+        role: userInfo.role,
+      });
+    } catch (error) {
+      logger.error(error);
+      if (error instanceof ServiceException) {
+        throw error;
+      } else {
+        throw InternalServiceException();
+      }
+    } finally {
+      queryRunner.release();
     }
   }
 

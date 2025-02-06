@@ -17,9 +17,13 @@ import {
   NOT_EXIST_EMAIL,
   NOT_EXIST_NICKNAME,
   NOT_EXIST_PASSWORD,
+  NOT_EXIST_USER,
+  NOT_MATCH_PASSWORD,
 } from 'src/config/exception/error-code/error.code';
 import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
-import { PostSignUpResponseDto } from './dto/request/post-sign-up-response.dto';
+import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
+import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
+import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
 
 export function PostSignUpSwaggerDecorator() {
   return applyDecorators(
@@ -128,6 +132,109 @@ export function PostSignUpSwaggerDecorator() {
           status: DUPLICATE_NICKNAME.status,
           code: DUPLICATE_NICKNAME.code,
           message: DUPLICATE_NICKNAME.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: INTERNAL_SERVER_ERROR.code,
+      description: INTERNAL_SERVER_ERROR.message,
+      schema: {
+        example: {
+          status: INTERNAL_SERVER_ERROR.status,
+          code: INTERNAL_SERVER_ERROR.code,
+          message: INTERNAL_SERVER_ERROR.message,
+        },
+      },
+    }),
+  );
+}
+
+export function PostSignInSwaggerDecorator() {
+  return applyDecorators(
+    ApiOperation({
+      summary: '로그인 API',
+      description:
+        '로그인을 진행하는 API 입니다. Response로 Token을 받을 수 있습니다.',
+    }),
+    ApiExtraModels(CommonResponse, PostSignInResponseDto),
+    ApiBody({ type: PostSignInRequestDto }),
+    ApiResponse({
+      status: 2000,
+      description: '요청 성공',
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(CommonResponse) },
+          {
+            properties: {
+              data: { $ref: getSchemaPath(PostSignInResponseDto) },
+            },
+          },
+        ],
+      },
+    }),
+    ApiResponse({
+      status: NOT_EXIST_EMAIL.code,
+      description: NOT_EXIST_EMAIL.message,
+      schema: {
+        example: {
+          status: NOT_EXIST_EMAIL.status,
+          code: NOT_EXIST_EMAIL.code,
+          message: NOT_EXIST_EMAIL.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: INVALID_EMAIL.code,
+      description: INVALID_EMAIL.message,
+      schema: {
+        example: {
+          status: INVALID_EMAIL.status,
+          code: INVALID_EMAIL.code,
+          message: INVALID_EMAIL.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: NOT_EXIST_PASSWORD.code,
+      description: NOT_EXIST_PASSWORD.message,
+      schema: {
+        example: {
+          status: NOT_EXIST_PASSWORD.status,
+          code: NOT_EXIST_PASSWORD.code,
+          message: NOT_EXIST_PASSWORD.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: INVALID_PASSWORD.code,
+      description: INVALID_PASSWORD.message,
+      schema: {
+        example: {
+          status: INVALID_PASSWORD.status,
+          code: INVALID_PASSWORD.code,
+          message: INVALID_PASSWORD.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: NOT_EXIST_USER.code,
+      description: NOT_EXIST_USER.message,
+      schema: {
+        example: {
+          status: NOT_EXIST_USER.status,
+          code: NOT_EXIST_USER.code,
+          message: NOT_EXIST_USER.message,
+        },
+      },
+    }),
+    ApiResponse({
+      status: NOT_MATCH_PASSWORD.code,
+      description: NOT_MATCH_PASSWORD.message,
+      schema: {
+        example: {
+          status: NOT_MATCH_PASSWORD.status,
+          code: NOT_MATCH_PASSWORD.code,
+          message: NOT_MATCH_PASSWORD.message,
         },
       },
     }),

@@ -13,6 +13,7 @@ import {
   NicknameRegex,
   PasswordRegex,
 } from 'src/config/regex/regex';
+import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
 
 export const PostSignUp = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
@@ -35,6 +36,26 @@ export const PostSignUp = createParamDecorator(
     }
     if (!NicknameRegex.test(body.nickname)) {
       throw InvalidNicknameException();
+    }
+    return body;
+  },
+);
+
+export const PostSignIn = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const body: PostSignInRequestDto = ctx.switchToHttp().getRequest().body;
+
+    if (!body.email) {
+      throw NotExistEmailException();
+    }
+    if (!EmailRegex.test(body.email)) {
+      throw InvalidEmailException();
+    }
+    if (!body.password) {
+      throw NotExistPasswordException();
+    }
+    if (!PasswordRegex.test(body.password)) {
+      throw InvalidPasswordException();
     }
     return body;
   },
