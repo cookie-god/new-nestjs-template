@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { UserInfo } from 'src/entity/user.entity';
 import { AuthRepository } from './auth.repository';
 import { DataSource, QueryRunner } from 'typeorm';
-import { payload } from './interface/user-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { plainToInstance } from 'class-transformer';
 import { ConfigService } from '@nestjs/config';
@@ -13,10 +12,14 @@ import {
   DuplicateEmailException,
   DuplicateNicknameException,
   InternalServiceException,
+  NotExistRefreshTokenException,
   ServiceException,
 } from 'src/config/exception/service.exception';
 import { PasswordUtil } from 'src/util/password.util';
 import { PostSignUpResponseDto } from './dto/request/post-sign-up-response.dto';
+import * as bcrypt from 'bcrypt';
+import { AccessPayload } from './interface/access-payload.interface';
+import { RefreshPayload } from './interface/refresh-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +29,13 @@ export class AuthService {
     private readonly configService: ConfigService,
     private dataSource: DataSource,
   ) {}
+
+  /**
+   * jwt 검증시 유저 아이디 기반으로 찾는 함수
+   */
+  async retrieveUser(id: number) {
+    return await this.authRepository.findUserById(id);
+  }
 
   /**
    * 유저 회원가입 함수
@@ -99,5 +109,47 @@ export class AuthService {
       nickname: nickname,
       role: ROLE.USER,
     });
+  }
+
+  /**
+   * 암호화 된 refresh token 비교하는 함수
+   */
+  async compareRefreshToken(
+    userInfo: UserInfo,
+    refreshToken: string,
+  ): Promise<boolean> {
+    if (!userInfo.refreshToken) {
+      throw NotExistRefreshTokenException();
+    }
+    const result = await bcrypt.compare(refreshToken, userInfo.refreshToken);
+    return result;
+  }
+
+  /**
+   * access token 발급하는 함수
+   */
+  async createAccessToken(userInfo: UserInfo): Promise<string> {
+    const payload: AccessPayload = {
+      id: userInfo.id,
+    };
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY'),
+      expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRE_DATE'),
+    });
+    return accessToken;
+  }
+
+  /**
+   * refresh token 발급하는 함수
+   */
+  async createRefreshToken(userInfo: UserInfo): Promise<string> {
+    const payload: RefreshPayload = {
+      id: userInfo.id,
+    };
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
+      expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRE_DATE'),
+    });
+    return refreshToken;
   }
 }

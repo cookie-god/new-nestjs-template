@@ -13,9 +13,36 @@ export class ErrorCodeVo {
 export type ErrorCode = ErrorCodeVo;
 
 export const NOT_EXIST_USER = new ErrorCodeVo(404, 4000, 'not exist user');
-export const NOT_EXIST_JWT = new ErrorCodeVo(400, 4001, 'not exist jwt');
-export const INVALID_JWT = new ErrorCodeVo(401, 4002, 'invalid jwt');
-export const EXPIRED_JWT = new ErrorCodeVo(401, 4003, 'expired jwt');
+export const NOT_EXIST_ACCESS_TOKEN = new ErrorCodeVo(
+  400,
+  4001,
+  'not exist access token',
+);
+export const NOT_EXIST_REFRESH_TOKEN = new ErrorCodeVo(
+  400,
+  4002,
+  'not exist refresh token',
+);
+export const INVALID_ACCESS_TOKEN = new ErrorCodeVo(
+  401,
+  4003,
+  'invalid access token',
+);
+export const INVALID_REFRESH_TOKEN = new ErrorCodeVo(
+  401,
+  4004,
+  'invalid refresh token',
+);
+export const EXPIRED_ACCESS_TOKEN = new ErrorCodeVo(
+  401,
+  4005,
+  'expired access token',
+);
+export const EXPIRED_REFRESH_TOKEN = new ErrorCodeVo(
+  401,
+  4006,
+  'expired refresh token',
+);
 
 export const NOT_EXIST_EMAIL = new ErrorCodeVo(400, 4050, 'not exist email');
 export const INVALID_EMAIL = new ErrorCodeVo(400, 4051, 'invalid email');

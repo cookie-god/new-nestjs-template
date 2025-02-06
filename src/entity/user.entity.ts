@@ -17,4 +17,12 @@ export class UserInfo extends BaseEntity {
 
   @Column({ name: 'role', type: 'varchar', length: 50, nullable: false })
   role: string;
+
+  @Column({
+    name: 'refresh_token',
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+  })
+  refreshToken: string;
 }

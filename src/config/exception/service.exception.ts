@@ -2,18 +2,21 @@ import {
   DUPLICATE_EMAIL,
   DUPLICATE_NICKNAME,
   ErrorCode,
-  EXPIRED_JWT,
+  EXPIRED_ACCESS_TOKEN,
+  EXPIRED_REFRESH_TOKEN,
   FAIL_SERVICE_CALL,
   INTERNAL_SERVER_ERROR,
+  INVALID_ACCESS_TOKEN,
   INVALID_EMAIL,
-  INVALID_JWT,
   INVALID_NICKNAME,
   INVALID_PASSWORD,
+  INVALID_REFRESH_TOKEN,
   INVALID_ROLE,
+  NOT_EXIST_ACCESS_TOKEN,
   NOT_EXIST_EMAIL,
-  NOT_EXIST_JWT,
   NOT_EXIST_NICKNAME,
   NOT_EXIST_PASSWORD,
+  NOT_EXIST_REFRESH_TOKEN,
   NOT_EXIST_ROLE,
   NOT_EXIST_USER,
 } from './error-code/error.code';
@@ -72,16 +75,40 @@ export const NotExistUserException = (message?: string): ServiceException => {
   return new ServiceException(NOT_EXIST_USER, message);
 };
 
-export const NotExistJWTException = (message?: string): ServiceException => {
-  return new ServiceException(NOT_EXIST_JWT, message);
+export const NotExistAccessTokenException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(NOT_EXIST_ACCESS_TOKEN, message);
 };
 
-export const InvalidJWTException = (message?: string): ServiceException => {
-  return new ServiceException(INVALID_JWT, message);
+export const NotExistRefreshTokenException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(NOT_EXIST_REFRESH_TOKEN, message);
 };
 
-export const ExpiredJWTException = (message?: string): ServiceException => {
-  return new ServiceException(EXPIRED_JWT, message);
+export const InvalidAccessTokenException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(INVALID_ACCESS_TOKEN, message);
+};
+
+export const InvalidRefreshTokenException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(INVALID_REFRESH_TOKEN, message);
+};
+
+export const ExpiredAccessTokenException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(EXPIRED_ACCESS_TOKEN, message);
+};
+
+export const ExpiredRefreshTokenException = (
+  message?: string,
+): ServiceException => {
+  return new ServiceException(EXPIRED_REFRESH_TOKEN, message);
 };
 
 export const FailServiceCallException = (
