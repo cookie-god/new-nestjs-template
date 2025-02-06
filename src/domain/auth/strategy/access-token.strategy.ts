@@ -27,7 +27,6 @@ export class JwtAccessTokenStrategy extends PassportStrategy(
     if (!user) {
       throw NotExistUserException();
     }
-
     return user;
   }
 }
