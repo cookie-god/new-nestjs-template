@@ -25,19 +25,28 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const status = exception.errorCode.status;
       const code = exception.errorCode.code;
 
-      logger.error(exception.stack);
+      // 로깅 추가
+      logger.error(`ServiceException 발생: ${exception.message}`, {
+        code,
+        status,
+        stack: exception.stack,
+      });
       response.status(status).json({
         status: status,
         code: code,
         message: exception.message,
       });
     } else if (exception instanceof UnauthorizedException) {
-      // 예상치 못한 에러가 발생한 경우
       const errorCode: ErrorCode = NOT_EXIST_USER;
       const status = errorCode.status;
       const code = errorCode.code;
 
-      logger.error(exception.message);
+      // 로깅 추가
+      logger.error(`UnauthorizedException 발생: ${exception.message}`, {
+        code,
+        status,
+        stack: exception.stack,
+      });
       response.status(status).json({
         status: status,
         code: code,
@@ -49,7 +58,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const status = errorCode.status;
       const code = errorCode.code;
 
-      logger.error(exception);
+      // 예상치 못한 에러도 로깅 추가
+      logger.error(
+        `Unhandled Exception 발생: ${
+          exception instanceof Error ? exception.message : String(exception)
+        }`,
+        {
+          code,
+          status,
+          stack: exception instanceof Error ? exception.stack : 'no stack',
+        },
+      );
       response.status(status).json({
         status: status,
         code: code,
