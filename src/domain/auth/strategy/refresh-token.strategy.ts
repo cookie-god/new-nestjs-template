@@ -11,6 +11,8 @@ import { RefreshPayload } from '../interface/refresh-payload.interface';
 import { Request } from 'express';
 import { AuthService } from '../auth.service';
 import { UserInfo } from 'src/entity/user.entity';
+import { SecretRefreshPayload } from '../interface/secret-refresh-payload.interface';
+import { BcrypUtil } from 'src/util/bcrypt.util';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(
@@ -25,11 +27,14 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
-      passReqToCallback: true, // 🚀 이 부분 추가
+      passReqToCallback: true,
     });
   }
 
-  async validate(req: Request, payload: RefreshPayload) {
+  async validate(req: Request, SecretRefreshPayload: SecretRefreshPayload) {
+    const payload: RefreshPayload = {
+      id: BcrypUtil.decryptNumber(SecretRefreshPayload.id),
+    };
     const authHeader = req?.headers?.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw NotExistRefreshTokenException();

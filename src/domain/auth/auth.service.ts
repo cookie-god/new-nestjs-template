@@ -20,10 +20,10 @@ import {
 import { BcrypUtil } from 'src/util/bcrypt.util';
 import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
 import * as bcrypt from 'bcrypt';
-import { AccessPayload } from './interface/access-payload.interface';
-import { RefreshPayload } from './interface/refresh-payload.interface';
 import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
 import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
+import { SecretRefreshPayload } from './interface/secret-refresh-payload.interface';
+import { SecretAccessPayload } from './interface/secret-access-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -180,8 +180,8 @@ export class AuthService {
    * access token 발급하는 함수
    */
   async createAccessToken(userInfo: UserInfo): Promise<string> {
-    const payload: AccessPayload = {
-      id: userInfo.id,
+    const payload: SecretAccessPayload = {
+      id: BcrypUtil.encrypt(userInfo.id),
     };
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY'),
@@ -194,8 +194,8 @@ export class AuthService {
    * refresh token 발급하는 함수
    */
   async createRefreshToken(userInfo: UserInfo): Promise<string> {
-    const payload: RefreshPayload = {
-      id: userInfo.id,
+    const payload: SecretRefreshPayload = {
+      id: BcrypUtil.encrypt(userInfo.id),
     };
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),

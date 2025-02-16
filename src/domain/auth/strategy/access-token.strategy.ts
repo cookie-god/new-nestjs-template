@@ -5,6 +5,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AccessPayload } from '../interface/access-payload.interface';
 import { NotExistUserException } from 'src/config/exception/service.exception';
 import { AuthService } from '../auth.service';
+import { SecretAccessPayload } from '../interface/secret-access-payload.interface';
+import { BcrypUtil } from 'src/util/bcrypt.util';
 
 @Injectable()
 export class JwtAccessTokenStrategy extends PassportStrategy(
@@ -22,7 +24,10 @@ export class JwtAccessTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: AccessPayload) {
+  async validate(secretAccessPayload: SecretAccessPayload) {
+    const payload: AccessPayload = {
+      id: BcrypUtil.decryptNumber(secretAccessPayload.id),
+    };
     const user = await this.authService.retrieveUser(payload.id);
     if (!user) {
       throw NotExistUserException();
