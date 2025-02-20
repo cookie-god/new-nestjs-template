@@ -7,6 +7,7 @@ import { AuthRepository } from './auth.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAccessTokenStrategy } from './strategy/access-token.strategy';
 import { JwtRefreshTokenStrategy } from './strategy/refresh-token.strategy';
+import { BcryptService } from '../bcrypt/bcrypt.service';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JwtRefreshTokenStrategy } from './strategy/refresh-token.strategy';
     AuthRepository,
     JwtAccessTokenStrategy,
     JwtRefreshTokenStrategy,
+    BcryptService,
   ],
 })
 export class AuthModule {}

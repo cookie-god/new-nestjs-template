@@ -12,7 +12,7 @@ import { Request } from 'express';
 import { AuthService } from '../auth.service';
 import { UserInfo } from 'src/entity/user.entity';
 import { SecretRefreshPayload } from '../interface/secret-refresh-payload.interface';
-import { BcrypUtil } from 'src/util/bcrypt.util';
+import { BcryptService } from 'src/domain/bcrypt/bcrypt.service';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(
@@ -22,6 +22,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   constructor(
     private readonly configService: ConfigService,
     private readonly authService: AuthService,
+    private readonly bcryptService: BcryptService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -33,7 +34,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 
   async validate(req: Request, SecretRefreshPayload: SecretRefreshPayload) {
     const payload: RefreshPayload = {
-      id: BcrypUtil.decryptNumber(SecretRefreshPayload.id),
+      id: this.bcryptService.decryptNumber(SecretRefreshPayload.id),
     };
     const authHeader = req?.headers?.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

@@ -17,13 +17,13 @@ import {
   NotMatchPasswordException,
   ServiceException,
 } from 'src/config/exception/service.exception';
-import { BcrypUtil } from 'src/util/bcrypt.util';
 import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
 import * as bcrypt from 'bcrypt';
 import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
 import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
 import { SecretRefreshPayload } from './interface/secret-refresh-payload.interface';
 import { SecretAccessPayload } from './interface/secret-access-payload.interface';
+import { BcryptService } from '../bcrypt/bcrypt.service';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +31,7 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly bcryptService: BcryptService,
     private dataSource: DataSource,
   ) {}
 
@@ -73,7 +74,7 @@ export class AuthService {
       const userInfo: UserInfo = await this.authRepository.saveUser(
         this.makeUserInfoEntity(
           data.email,
-          await BcrypUtil.hash(data.password),
+          await this.bcryptService.hash(data.password),
           data.nickname,
         ),
         queryRunner.manager,
@@ -113,12 +114,14 @@ export class AuthService {
         throw NotExistUserException();
       }
 
-      if (!(await BcrypUtil.compare(data.password, userInfo.password))) {
+      if (
+        !(await this.bcryptService.compare(data.password, userInfo.password))
+      ) {
         throw NotMatchPasswordException();
       }
       const accessToken = await this.createAccessToken(userInfo);
       const refreshToken = await this.createRefreshToken(userInfo);
-      const hashedRefreshToken = await BcrypUtil.hash(refreshToken);
+      const hashedRefreshToken = await this.bcryptService.hash(refreshToken);
 
       await this.authRepository.editUserRefreshToken(
         userInfo.id,
@@ -181,7 +184,7 @@ export class AuthService {
    */
   async createAccessToken(userInfo: UserInfo): Promise<string> {
     const payload: SecretAccessPayload = {
-      id: BcrypUtil.encrypt(userInfo.id),
+      id: this.bcryptService.encrypt(userInfo.id),
     };
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY'),
@@ -195,7 +198,7 @@ export class AuthService {
    */
   async createRefreshToken(userInfo: UserInfo): Promise<string> {
     const payload: SecretRefreshPayload = {
-      id: BcrypUtil.encrypt(userInfo.id),
+      id: this.bcryptService.encrypt(userInfo.id),
     };
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
