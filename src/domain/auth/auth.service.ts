@@ -78,12 +78,13 @@ export class AuthService extends BaseService {
       this.manager,
     );
 
-    return plainToInstance(PostSignUpResponseDto, {
-      id: userInfo.id,
-      email: userInfo.email,
-      nickname: userInfo.nickname,
-      role: userInfo.role,
-    });
+    const result: PostSignUpResponseDto = new PostSignUpResponseDto();
+    result.id = userInfo.id;
+    result.email = userInfo.email;
+    result.nickname = userInfo.nickname;
+    result.role = userInfo.role;
+
+    return result;
   }
 
   /**
@@ -112,13 +113,14 @@ export class AuthService extends BaseService {
       this.manager,
     );
 
-    return plainToClass(PostSignInResponseDto, {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      email: userInfo.email,
-      nickname: userInfo.nickname,
-      role: userInfo.role,
-    });
+    const result: PostSignInResponseDto = new PostSignInResponseDto();
+    result.accessToken = accessToken;
+    result.refreshToken = refreshToken;
+    result.email = userInfo.email;
+    result.nickname = userInfo.nickname;
+    result.role = userInfo.role;
+
+    return result;
   }
 
   /**

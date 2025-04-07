@@ -35,5 +35,5 @@ export class PostSignInResponseDto {
     description: '유저 권한',
     required: true,
   })
-  role: ROLE;
+  role: string;
 }
