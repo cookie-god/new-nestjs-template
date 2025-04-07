@@ -3,9 +3,10 @@ import {
   ServiceException,
 } from 'src/config/exception/service.exception';
 import { logger } from 'src/config/logger/logger';
+import { TransactionalOptions } from 'src/transactional.interface';
 import { DataSource } from 'typeorm';
 
-export function Transactional() {
+export function Transactional(options?: TransactionalOptions) {
   return function (
     target: any,
     propertyKey: string,
@@ -20,7 +21,7 @@ export function Transactional() {
 
       const queryRunner = dataSource.createQueryRunner();
       await queryRunner.connect();
-      await queryRunner.startTransaction();
+      await queryRunner.startTransaction(options?.isolationLevel);
 
       try {
         this['manager'] = queryRunner.manager;

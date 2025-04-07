@@ -72,6 +72,8 @@ export const NOT_MATCH_PASSWORD = new ErrorCodeVo(
   'not match password',
 );
 
+export const DB_SERVER_ERROR = new ErrorCodeVo(500, 5002, 'DB server error');
+
 export const FAIL_SERVICE_CALL = new ErrorCodeVo(
   500,
   5001,

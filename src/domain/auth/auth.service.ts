@@ -37,7 +37,6 @@ export class AuthService extends BaseService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly bcryptService: BcryptService,
-    private dataSource: DataSource,
   ) {
     super(moduleRef);
   }
@@ -56,15 +55,15 @@ export class AuthService extends BaseService {
   async createUsers(
     data: PostSignUpRequestDto,
   ): Promise<PostSignUpResponseDto> {
+    const manager = this.getManager(); // 트랜잭션 매니저
+
     // 이메일 중복 검사
-    if (await this.authRepository.isExistEmail(data.email, this.manager)) {
+    if (await this.authRepository.isExistEmail(data.email, manager)) {
       throw DuplicateEmailException();
     }
 
     // 닉네임 중복 검사
-    if (
-      await this.authRepository.isExistNickname(data.nickname, this.manager)
-    ) {
+    if (await this.authRepository.isExistNickname(data.nickname, manager)) {
       throw DuplicateNicknameException();
     }
 
@@ -75,7 +74,7 @@ export class AuthService extends BaseService {
         await this.bcryptService.hash(data.password),
         data.nickname,
       ),
-      this.manager,
+      manager,
     );
 
     const result: PostSignUpResponseDto = new PostSignUpResponseDto();
@@ -92,9 +91,11 @@ export class AuthService extends BaseService {
    */
   @ReadOnly()
   async login(data: PostSignInRequestDto): Promise<PostSignInResponseDto> {
+    const manager = this.getManager(); // 트랜잭션 매니저
+
     const userInfo: UserInfo = await this.authRepository.findUserInfoByEmail(
       data.email,
-      this.manager,
+      manager,
     );
     if (userInfo === null) {
       throw NotExistUserException();
@@ -110,7 +111,7 @@ export class AuthService extends BaseService {
     await this.authRepository.editUserRefreshToken(
       userInfo.id,
       hashedRefreshToken,
-      this.manager,
+      manager,
     );
 
     const result: PostSignInResponseDto = new PostSignInResponseDto();

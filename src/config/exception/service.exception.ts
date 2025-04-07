@@ -1,4 +1,5 @@
 import {
+  DB_SERVER_ERROR,
   DUPLICATE_EMAIL,
   DUPLICATE_NICKNAME,
   ErrorCode,
@@ -128,6 +129,10 @@ export const InternalServiceException = (
   message?: string,
 ): ServiceException => {
   return new ServiceException(INTERNAL_SERVER_ERROR, message);
+};
+
+export const DBServerException = (message?: string): ServiceException => {
+  return new ServiceException(DB_SERVER_ERROR, message);
 };
 
 export class ServiceException extends Error {
