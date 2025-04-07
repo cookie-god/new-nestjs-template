@@ -3,18 +3,30 @@ import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 const { combine, timestamp, json, colorize, printf } = winston.format;
 
+function safeStringify(obj: any, space = 2) {
+  const seen = new WeakSet();
+  return JSON.stringify(
+    obj,
+    (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) return '[Circular]';
+        seen.add(value);
+      }
+      return value;
+    },
+    space,
+  );
+}
+
 // 커스텀 콘솔 포맷: 메시지와 함께 전달된 추가 메타데이터를 JSON.stringify로 예쁘게 출력
 const customConsoleFormat = printf(({ level, message, timestamp, ...meta }) => {
   let output = `[${timestamp}] ${level}: ${message}`;
-  // 추가 메타데이터가 있을 경우 보기 좋게 JSON.stringify 사용
   if (Object.keys(meta).length) {
-    output += `\n${JSON.stringify(meta, null, 2)}`;
+    // meta에 내용이 있다면
+    output += `\n${safeStringify(meta)}`;
   }
   return output;
 });
-
-// 파일 전용 로그 포맷 (JSON)
-const fileFormat = combine(timestamp(), json());
 
 export const logger = winston.createLogger({
   level: 'info',
