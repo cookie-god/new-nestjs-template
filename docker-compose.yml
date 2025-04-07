@@ -1,50 +1,12 @@
-version: '3.7'
+version: '3.8'
 
 services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
-    container_name: elasticsearch
+  app:
+    container_name: template-server
+    build: .
+    volumes:
+      - ./logs:/app/logs # 호스트의 logs 폴더를 컨테이너의 /app/logs에 마운트
+    ports:
+      - '3000:3000'
     environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-    ports:
-      - "9200:9200"
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.17.9
-    container_name: logstash
-    ports:
-      - "5000:5000"   # Logstash TCP input 포트
-      - "9600:9600"   # Logstash 모니터링 API (옵션)
-    volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./logstash/pipeline:/usr/share/logstash/pipeline
-    depends_on:
-      - elasticsearch
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.9
-    container_name: kibana
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-
-  nestjs-app:
-    container_name: nestjs-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./logs:/app/logs
-    depends_on:
-      - logstash
-
-volumes:
-  esdata:
+      - NODE_ENV=dev
