@@ -42,6 +42,17 @@ export const logger = winston.createLogger({
       level: 'info',
       format: combine(timestamp(), json()),
     }),
+    // 날짜별로 생성되는 경고 로그 파일 설정
+    new DailyRotateFile({
+      dirname: 'logs',
+      filename: '%DATE%-warn.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '14d',
+      level: 'warn',
+      format: combine(timestamp(), json()),
+    }),
     // 날짜별로 생성되는 에러 로그 파일 설정
     new DailyRotateFile({
       dirname: 'logs',
