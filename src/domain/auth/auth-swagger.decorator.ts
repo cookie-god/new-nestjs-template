@@ -12,7 +12,6 @@ import {
   DUPLICATE_EMAIL,
   DUPLICATE_NICKNAME,
   EXPIRED_REFRESH_TOKEN,
-  INTERNAL_SERVER_ERROR,
   INVALID_EMAIL,
   INVALID_NICKNAME,
   INVALID_PASSWORD,
@@ -29,6 +28,7 @@ import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto'
 import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
 import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
 import { PostAccessTokenResponseDto } from './dto/response/post-refresh-token-response.dto';
+import { CommonErrorResponses } from 'src/decorator/common-error.decorator';
 
 export function PostSignUpSwaggerDecorator() {
   return applyDecorators(
@@ -140,17 +140,7 @@ export function PostSignUpSwaggerDecorator() {
         },
       },
     }),
-    ApiResponse({
-      status: INTERNAL_SERVER_ERROR.code,
-      description: INTERNAL_SERVER_ERROR.message,
-      schema: {
-        example: {
-          status: INTERNAL_SERVER_ERROR.status,
-          code: INTERNAL_SERVER_ERROR.code,
-          message: INTERNAL_SERVER_ERROR.message,
-        },
-      },
-    }),
+    CommonErrorResponses(),
   );
 }
 
@@ -243,17 +233,7 @@ export function PostSignInSwaggerDecorator() {
         },
       },
     }),
-    ApiResponse({
-      status: INTERNAL_SERVER_ERROR.code,
-      description: INTERNAL_SERVER_ERROR.message,
-      schema: {
-        example: {
-          status: INTERNAL_SERVER_ERROR.status,
-          code: INTERNAL_SERVER_ERROR.code,
-          message: INTERNAL_SERVER_ERROR.message,
-        },
-      },
-    }),
+    CommonErrorResponses(),
   );
 }
 
@@ -324,16 +304,6 @@ export function PostRefreshTokenSwaggerDecorator() {
         },
       },
     }),
-    ApiResponse({
-      status: INTERNAL_SERVER_ERROR.code,
-      description: INTERNAL_SERVER_ERROR.message,
-      schema: {
-        example: {
-          status: INTERNAL_SERVER_ERROR.status,
-          code: INTERNAL_SERVER_ERROR.code,
-          message: INTERNAL_SERVER_ERROR.message,
-        },
-      },
-    }),
+    CommonErrorResponses(),
   );
 }
