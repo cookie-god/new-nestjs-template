@@ -1,3 +1,4 @@
+import { BaseService } from './service/base.service';
 import * as process from 'node:process';
 
 import { Module } from '@nestjs/common';
@@ -37,6 +38,7 @@ import { AuthModule } from './domain/auth/auth.module';
   ],
   controllers: [AppController],
   providers: [
+    BaseService,
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,

@@ -24,16 +24,23 @@ import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto'
 import { SecretRefreshPayload } from './interface/secret-refresh-payload.interface';
 import { SecretAccessPayload } from './interface/secret-access-payload.interface';
 import { BcryptService } from '../bcrypt/bcrypt.service';
+import { BaseService } from 'src/service/base.service';
+import { ModuleRef } from '@nestjs/core';
+import { Transactional } from 'src/decorator/transactional.decorator';
+import { ReadOnly } from 'src/decorator/readonly.decorator';
 
 @Injectable()
-export class AuthService {
+export class AuthService extends BaseService {
   constructor(
+    moduleRef: ModuleRef,
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly bcryptService: BcryptService,
     private dataSource: DataSource,
-  ) {}
+  ) {
+    super(moduleRef);
+  }
 
   /**
    * jwt 검증시 유저 아이디 기반으로 찾는 함수
@@ -45,107 +52,73 @@ export class AuthService {
   /**
    * 유저 회원가입 함수
    */
+  @Transactional()
   async createUsers(
     data: PostSignUpRequestDto,
   ): Promise<PostSignUpResponseDto> {
-    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      // 이메일 중복 검사
-      if (
-        await this.authRepository.isExistEmail(data.email, queryRunner.manager)
-      ) {
-        throw DuplicateEmailException();
-      }
-
-      // 닉네임 중복 검사
-      if (
-        await this.authRepository.isExistNickname(
-          data.nickname,
-          queryRunner.manager,
-        )
-      ) {
-        throw DuplicateNicknameException();
-      }
-
-      // 유저 저장
-      const userInfo: UserInfo = await this.authRepository.saveUser(
-        this.makeUserInfoEntity(
-          data.email,
-          await this.bcryptService.hash(data.password),
-          data.nickname,
-        ),
-        queryRunner.manager,
-      );
-      await queryRunner.commitTransaction();
-      return plainToInstance(PostSignUpResponseDto, {
-        id: userInfo.id,
-        email: userInfo.email,
-        nickname: userInfo.nickname,
-        role: userInfo.role,
-      });
-    } catch (error) {
-      logger.error(error);
-      await queryRunner.rollbackTransaction();
-      if (error instanceof ServiceException) {
-        throw error;
-      } else {
-        throw InternalServiceException();
-      }
-    } finally {
-      await queryRunner.release();
+    // 이메일 중복 검사
+    if (await this.authRepository.isExistEmail(data.email, this.manager)) {
+      throw DuplicateEmailException();
     }
+
+    // 닉네임 중복 검사
+    if (
+      await this.authRepository.isExistNickname(data.nickname, this.manager)
+    ) {
+      throw DuplicateNicknameException();
+    }
+
+    // 유저 저장
+    const userInfo: UserInfo = await this.authRepository.saveUser(
+      this.makeUserInfoEntity(
+        data.email,
+        await this.bcryptService.hash(data.password),
+        data.nickname,
+      ),
+      this.manager,
+    );
+
+    return plainToInstance(PostSignUpResponseDto, {
+      id: userInfo.id,
+      email: userInfo.email,
+      nickname: userInfo.nickname,
+      role: userInfo.role,
+    });
   }
 
   /**
    * 로그인 함수
    */
+  @ReadOnly()
   async login(data: PostSignInRequestDto): Promise<PostSignInResponseDto> {
-    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
-    queryRunner.connect();
-    try {
-      const userInfo: UserInfo = await this.authRepository.findUserInfoByEmail(
-        data.email,
-        queryRunner.manager,
-      );
-      if (userInfo === null) {
-        throw NotExistUserException();
-      }
-
-      if (
-        !(await this.bcryptService.compare(data.password, userInfo.password))
-      ) {
-        throw NotMatchPasswordException();
-      }
-      const accessToken = await this.createAccessToken(userInfo);
-      const refreshToken = await this.createRefreshToken(userInfo);
-      const hashedRefreshToken = await this.bcryptService.hash(refreshToken);
-
-      await this.authRepository.editUserRefreshToken(
-        userInfo.id,
-        hashedRefreshToken,
-        queryRunner.manager,
-      );
-
-      return plainToClass(PostSignInResponseDto, {
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        email: userInfo.email,
-        nickname: userInfo.nickname,
-        role: userInfo.role,
-      });
-    } catch (error) {
-      logger.error(error);
-      if (error instanceof ServiceException) {
-        throw error;
-      } else {
-        throw InternalServiceException();
-      }
-    } finally {
-      queryRunner.release();
+    const userInfo: UserInfo = await this.authRepository.findUserInfoByEmail(
+      data.email,
+      this.manager,
+    );
+    if (userInfo === null) {
+      throw NotExistUserException();
     }
+
+    if (!(await this.bcryptService.compare(data.password, userInfo.password))) {
+      throw NotMatchPasswordException();
+    }
+    const accessToken = await this.createAccessToken(userInfo);
+    const refreshToken = await this.createRefreshToken(userInfo);
+    const hashedRefreshToken = await this.bcryptService.hash(refreshToken);
+
+    await this.authRepository.editUserRefreshToken(
+      userInfo.id,
+      hashedRefreshToken,
+      this.manager,
+    );
+
+    return plainToClass(PostSignInResponseDto, {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      email: userInfo.email,
+      nickname: userInfo.nickname,
+      role: userInfo.role,
+    });
   }
 
   /**
