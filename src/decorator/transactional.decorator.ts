@@ -3,7 +3,7 @@ import {
   ServiceException,
 } from 'src/config/exception/service.exception';
 import { logger } from 'src/config/logger/logger';
-import { TransactionalOptions } from 'src/transactional.interface';
+import { TransactionalOptions } from 'src/interface/transactional.interface';
 import { DataSource } from 'typeorm';
 
 export function Transactional(options?: TransactionalOptions) {
