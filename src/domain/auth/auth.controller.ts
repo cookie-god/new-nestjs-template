@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   PostRefreshTokenSwaggerDecorator,
@@ -26,7 +26,7 @@ export class AuthController {
   @PostSignUpSwaggerDecorator()
   @Post('sign-up')
   async postSignUp(
-    @PostSignUp() data: PostSignUpRequestDto,
+    @Body() data: PostSignUpRequestDto,
   ): Promise<CommonResponse<PostSignUpResponseDto>> {
     return plainToClass(CommonResponse<PostSignUpResponseDto>, {
       status: 201,

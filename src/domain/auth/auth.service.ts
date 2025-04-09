@@ -1,21 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { UserInfo } from 'src/entity/user.entity';
 import { AuthRepository } from './auth.repository';
-import { DataSource, QueryRunner } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { plainToClass, plainToInstance } from 'class-transformer';
 import { ConfigService } from '@nestjs/config';
-import { logger } from 'src/config/logger/logger';
 import { ROLE } from 'src/enums/role.enum';
 import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
 import {
   DuplicateEmailException,
   DuplicateNicknameException,
-  InternalServiceException,
   NotExistRefreshTokenException,
   NotExistUserException,
   NotMatchPasswordException,
-  ServiceException,
 } from 'src/config/exception/service.exception';
 import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
 import * as bcrypt from 'bcrypt';
@@ -26,8 +21,8 @@ import { SecretAccessPayload } from './interface/secret-access-payload.interface
 import { BcryptService } from '../bcrypt/bcrypt.service';
 import { BaseService } from 'src/service/base.service';
 import { ModuleRef } from '@nestjs/core';
-import { Transactional } from 'src/decorator/transactional.decorator';
-import { ReadOnly } from 'src/decorator/readonly.decorator';
+import { Transactional } from 'src/decorator/service/transactional.decorator';
+import { ReadOnly } from 'src/decorator/service/readonly.decorator';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -132,13 +127,13 @@ export class AuthService extends BaseService {
     password: string,
     nickname: string,
   ): UserInfo {
-    return plainToInstance(UserInfo, {
-      id: null,
-      email: email,
-      password: password,
-      nickname: nickname,
-      role: ROLE.USER,
-    });
+    const entity: UserInfo = new UserInfo();
+    entity.id = null;
+    entity.email = email;
+    entity.password = password;
+    entity.nickname = nickname;
+    entity.role = ROLE.USER;
+    return entity;
   }
 
   /**

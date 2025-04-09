@@ -28,7 +28,7 @@ import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto'
 import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
 import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
 import { PostAccessTokenResponseDto } from './dto/response/post-refresh-token-response.dto';
-import { CommonErrorResponses } from 'src/decorator/common-error.decorator';
+import { CommonErrorResponses } from 'src/decorator/response/common-error.decorator';
 
 export function PostSignUpSwaggerDecorator() {
   return applyDecorators(
