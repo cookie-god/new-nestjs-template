@@ -1,4 +1,3 @@
-// pipes/custom-validation.pipe.ts
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
@@ -26,33 +25,40 @@ export class CustomValidationPipe implements PipeTransform {
     const errors = await validate(object);
 
     if (errors.length > 0) {
-      const firstError = errors[0];
-      const constraints = firstError.constraints;
+      // 🔽 재귀적으로 constraints 찾아내는 함수
+      const findFirstConstraint = (errors: any[]): string | null => {
+        for (const error of errors) {
+          if (error.constraints) {
+            const firstKey = VALIDATION_PRIORITY.find((key) =>
+              Object.prototype.hasOwnProperty.call(error.constraints, key),
+            );
 
-      if (constraints) {
-        const firstKey = VALIDATION_PRIORITY.find((key) =>
-          Object.prototype.hasOwnProperty.call(constraints, key),
-        );
-        const messageKey =
-          (firstKey && constraints[firstKey]) || Object.values(constraints)[0];
+            return (
+              (firstKey && error.constraints[firstKey]) ||
+              Object.values(error.constraints)[0]
+            );
+          }
 
-        const errorCode = (ErrorCodes as any)[messageKey];
-
-        if (errorCode) {
-          throw new ServiceException(errorCode);
-        } else {
-          throw new ServiceException(
-            ErrorCodes.INTERNAL_SERVER_ERROR,
-            messageKey,
-          );
+          if (error.children && error.children.length > 0) {
+            const nested = findFirstConstraint(error.children);
+            if (nested) return nested;
+          }
         }
-      }
+        return null;
+      };
 
-      // constraints가 없으면 fallback
-      throw new ServiceException(
-        ErrorCodes.INTERNAL_SERVER_ERROR,
-        'Validation failed',
-      );
+      const messageKey = findFirstConstraint(errors) ?? 'Validation failed';
+
+      const errorCode = (ErrorCodes as any)[messageKey];
+
+      if (errorCode) {
+        throw new ServiceException(errorCode);
+      } else {
+        throw new ServiceException(
+          ErrorCodes.INTERNAL_SERVER_ERROR,
+          messageKey,
+        );
+      }
     }
 
     return value;
