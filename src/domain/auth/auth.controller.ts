@@ -5,7 +5,6 @@ import {
   PostSignInSwaggerDecorator,
   PostSignUpSwaggerDecorator,
 } from './auth-swagger.decorator';
-import { PostSignIn, PostSignUp } from './auth-validation.decorator';
 import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
 import { CommonResponse } from 'src/config/response/common.response';
 import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
@@ -37,7 +36,7 @@ export class AuthController {
   @PostSignInSwaggerDecorator()
   @Post('sign-in')
   async postSignIn(
-    @PostSignIn() data: PostSignInRequestDto,
+    @Body() data: PostSignInRequestDto,
   ): Promise<CommonResponse<PostSignInResponseDto>> {
     return plainToClass(CommonResponse<PostSignInResponseDto>, {
       status: 201,
