@@ -25,7 +25,6 @@ export class CustomValidationPipe implements PipeTransform {
     const errors = await validate(object);
 
     if (errors.length > 0) {
-      // 🔽 재귀적으로 constraints 찾아내는 함수
       const findFirstConstraint = (errors: any[]): string | null => {
         for (const error of errors) {
           if (error.constraints) {
