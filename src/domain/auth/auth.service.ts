@@ -3,7 +3,6 @@ import { UserInfo } from 'src/entity/user.entity';
 import { AuthRepository } from './auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { ROLE } from 'src/enums/role.enum';
 import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
 import {
   DuplicateEmailException,
@@ -64,7 +63,7 @@ export class AuthService extends BaseService {
 
     // 유저 저장
     const userInfo: UserInfo = await this.authRepository.saveUser(
-      this.makeUserInfoEntity(
+      UserInfo.from(
         data.email,
         await this.bcryptService.hash(data.password),
         data.nickname,
@@ -117,23 +116,6 @@ export class AuthService extends BaseService {
     result.role = userInfo.role;
 
     return result;
-  }
-
-  /**
-   * 유저 엔티티를 만들어주는 함수
-   */
-  makeUserInfoEntity(
-    email: string,
-    password: string,
-    nickname: string,
-  ): UserInfo {
-    const entity: UserInfo = new UserInfo();
-    entity.id = null;
-    entity.email = email;
-    entity.password = password;
-    entity.nickname = nickname;
-    entity.role = ROLE.USER;
-    return entity;
   }
 
   /**
