@@ -26,7 +26,7 @@ import { ReadOnly } from 'src/decorator/service/readonly.decorator';
 @Injectable()
 export class AuthService extends BaseService {
   constructor(
-    moduleRef: ModuleRef,
+    protected readonly moduleRef: ModuleRef,
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
