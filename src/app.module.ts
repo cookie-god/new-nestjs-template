@@ -1,3 +1,4 @@
+import { BcryptModule } from './bcrypt/bcrypt.module';
 import { BaseService } from './service/base.service';
 import * as process from 'node:process';
 
@@ -14,6 +15,9 @@ import { AuthModule } from './domain/auth/auth.module';
 
 @Module({
   imports: [
+    BcryptModule,
+    UsersModule,
+    AuthModule,
     ConfigModule.forRoot({
       envFilePath: `src/env/.${process.env.NODE_ENV}.env`,
       isGlobal: true,
@@ -33,8 +37,6 @@ import { AuthModule } from './domain/auth/auth.module';
         bigNumberStrings: false,
       },
     }),
-    UsersModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [

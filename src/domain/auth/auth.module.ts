@@ -7,12 +7,13 @@ import { AuthRepository } from './auth.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAccessTokenStrategy } from './strategy/access-token.strategy';
 import { JwtRefreshTokenStrategy } from './strategy/refresh-token.strategy';
-import { BcryptService } from '../bcrypt/bcrypt.service';
+import { BcryptModule } from 'src/bcrypt/bcrypt.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserInfo]),
     JwtModule.register({ global: true }),
+    BcryptModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -20,7 +21,6 @@ import { BcryptService } from '../bcrypt/bcrypt.service';
     AuthRepository,
     JwtAccessTokenStrategy,
     JwtRefreshTokenStrategy,
-    BcryptService,
   ],
 })
 export class AuthModule {}

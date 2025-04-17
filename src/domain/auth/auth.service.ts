@@ -17,7 +17,7 @@ import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
 import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto';
 import { SecretRefreshPayload } from './interface/secret-refresh-payload.interface';
 import { SecretAccessPayload } from './interface/secret-access-payload.interface';
-import { BcryptService } from '../bcrypt/bcrypt.service';
+import { BcryptService } from '../../bcrypt/bcrypt.service';
 import { BaseService } from 'src/service/base.service';
 import { ModuleRef } from '@nestjs/core';
 import { Transactional } from 'src/decorator/service/transactional.decorator';

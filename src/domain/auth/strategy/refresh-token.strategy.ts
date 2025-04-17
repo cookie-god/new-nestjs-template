@@ -12,7 +12,7 @@ import { Request } from 'express';
 import { AuthService } from '../auth.service';
 import { UserInfo } from 'src/entity/user.entity';
 import { SecretRefreshPayload } from '../interface/secret-refresh-payload.interface';
-import { BcryptService } from 'src/domain/bcrypt/bcrypt.service';
+import { BcryptService } from '../../../bcrypt/bcrypt.service';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(

@@ -6,7 +6,7 @@ import { AccessPayload } from '../interface/access-payload.interface';
 import { NotExistUserException } from 'src/config/exception/service.exception';
 import { AuthService } from '../auth.service';
 import { SecretAccessPayload } from '../interface/secret-access-payload.interface';
-import { BcryptService } from 'src/domain/bcrypt/bcrypt.service';
+import { BcryptService } from '../../../bcrypt/bcrypt.service';
 
 @Injectable()
 export class JwtAccessTokenStrategy extends PassportStrategy(
