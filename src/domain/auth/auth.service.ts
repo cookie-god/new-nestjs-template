@@ -1,16 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { UserInfo } from 'src/entity/user.entity';
 import { AuthRepository } from './auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
-import {
-  DuplicateEmailException,
-  DuplicateNicknameException,
-  NotExistRefreshTokenException,
-  NotExistUserException,
-  NotMatchPasswordException,
-} from 'src/config/exception/service.exception';
 import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
 import * as bcrypt from 'bcrypt';
 import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
@@ -18,10 +10,18 @@ import { PostSignInResponseDto } from './dto/response/post-sign-in-response.dto'
 import { SecretRefreshPayload } from './interface/secret-refresh-payload.interface';
 import { SecretAccessPayload } from './interface/secret-access-payload.interface';
 import { BcryptService } from '../../bcrypt/bcrypt.service';
-import { BaseService } from 'src/service/base.service';
 import { ModuleRef } from '@nestjs/core';
-import { Transactional } from 'src/decorator/service/transactional.decorator';
-import { ReadOnly } from 'src/decorator/service/readonly.decorator';
+import { BaseService } from '../../service/base.service';
+import { Transactional } from '../../decorator/service/transactional.decorator';
+import {
+  DuplicateEmailException,
+  DuplicateNicknameException,
+  NotExistRefreshTokenException,
+  NotExistUserException,
+  NotMatchPasswordException,
+} from '../../config/exception/service.exception';
+import { UserInfo } from '../../entity/user.entity';
+import { ReadOnly } from '../../decorator/service/readonly.decorator';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -49,7 +49,7 @@ export class AuthService extends BaseService {
   async createUsers(
     data: PostSignUpRequestDto,
   ): Promise<PostSignUpResponseDto> {
-    const manager = this.getManager(); // 트랜잭션 매니저
+    const manager = this.getManager();
 
     // 이메일 중복 검사
     if (await this.authRepository.isExistEmail(data.email, manager)) {
@@ -85,7 +85,7 @@ export class AuthService extends BaseService {
    */
   @ReadOnly()
   async login(data: PostSignInRequestDto): Promise<PostSignInResponseDto> {
-    const manager = this.getManager(); // 트랜잭션 매니저
+    const manager = this.getManager();
 
     const userInfo: UserInfo = await this.authRepository.findUserInfoByEmail(
       data.email,
