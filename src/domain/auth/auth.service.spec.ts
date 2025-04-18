@@ -15,7 +15,6 @@ import {
   NotMatchPasswordException,
 } from '../../config/exception/service.exception';
 import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
-import { get } from 'http';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -24,7 +23,6 @@ describe('AuthService', () => {
   let bcryptService: BcryptService;
   let configService: ConfigService;
 
-  // Mock 객체 선언
   const queryRunnerMock = {
     connect: jest.fn(),
     startTransaction: jest.fn(),
@@ -32,18 +30,18 @@ describe('AuthService', () => {
     rollbackTransaction: jest.fn(),
     release: jest.fn(),
     manager: {} as EntityManager,
-  };
+  }; // query runner 에서 사용하는 메서드들을 mock으로 생성
 
   const dataSourceMock = {
     createQueryRunner: jest.fn().mockReturnValue(queryRunnerMock),
-  };
+  }; // dataSource 사용시 필요한 query runner 객체를 mock으로 생성
 
   const moduleRefMock = {
     get: jest.fn().mockImplementation((token: any) => {
       if (token === DataSource) return dataSourceMock;
       return null;
     }),
-  };
+  }; // 트랜잭셔널 내부 dataSource 가져오는 mock 객체
 
   beforeEach(async () => {
     authRepository = {
