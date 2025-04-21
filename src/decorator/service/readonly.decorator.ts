@@ -14,7 +14,7 @@ export function ReadOnly() {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-      const moduleRef = this['moduleRef'];
+      const moduleRef = this.moduleRef;
       const dataSource: DataSource = moduleRef.get(DataSource, {
         strict: false,
       });
@@ -23,7 +23,7 @@ export function ReadOnly() {
       await queryRunner.connect();
 
       try {
-        this['manager'] = queryRunner.manager;
+        this.manager = queryRunner.manager;
         const result = await originalMethod.apply(this, args);
         return result;
       } catch (error) {

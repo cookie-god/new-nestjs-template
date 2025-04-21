@@ -14,7 +14,7 @@ export function Transactional(options?: TransactionalOptions) {
   ) {
     const originalMethod = descriptor.value;
     descriptor.value = async function (...args: any[]) {
-      const moduleRef = this['moduleRef'];
+      const moduleRef = this.moduleRef;
       const dataSource: DataSource = moduleRef.get(DataSource, {
         strict: false,
       });
@@ -24,7 +24,7 @@ export function Transactional(options?: TransactionalOptions) {
       await queryRunner.startTransaction(options?.isolationLevel);
 
       try {
-        this['manager'] = queryRunner.manager;
+        this.manager = queryRunner.manager;
         const result = await originalMethod.apply(this, args);
         await queryRunner.commitTransaction();
         return result;
