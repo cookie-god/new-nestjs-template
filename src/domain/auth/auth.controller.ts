@@ -38,6 +38,7 @@ export class AuthController {
   async postSignIn(
     @Body() data: PostSignInRequestDto,
   ): Promise<CommonResponse<PostSignInResponseDto>> {
+    console.log('data', data);
     return plainToClass(CommonResponse<PostSignInResponseDto>, {
       status: 201,
       data: await this.authService.login(data),

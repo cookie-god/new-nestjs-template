@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, Matches, ValidateIf } from 'class-validator';
 import { NicknameRegex, PasswordRegex } from 'src/config/regex/regex';
-import { IsNotBlank } from 'src/decorator/is-not-blank.decorator';
+import { IsNotBlank } from 'src/decorator/class-validator/is-not-blank.decorator';
 
 export class PostSignUpRequestDto {
   @ApiProperty({

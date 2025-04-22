@@ -21,7 +21,12 @@ export class CustomValidationPipe implements PipeTransform {
       return value;
     }
 
-    const object = plainToInstance(metatype, value);
+    const object = plainToInstance(metatype, value, {
+      enableImplicitConversion: true,
+      exposeDefaultValues: true,
+      excludeExtraneousValues: false,
+    });
+
     const errors = await validate(object);
 
     if (errors.length > 0) {
@@ -60,7 +65,7 @@ export class CustomValidationPipe implements PipeTransform {
       }
     }
 
-    return value;
+    return object;
   }
 
   private toValidate(metatype: new (...args: any[]) => any): boolean {
