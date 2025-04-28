@@ -11,6 +11,9 @@ export class AuthRepository {
     private readonly userRepository: Repository<UserInfo>,
   ) {}
 
+  /**
+   * jwt 검증시 유저 아이디 기반으로 찾는 함수
+   */
   async findUserById(id: number): Promise<UserInfo> | null {
     const user: UserInfo | null = await this.userRepository.findOne({
       where: {
