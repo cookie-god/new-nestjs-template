@@ -27,7 +27,7 @@ export class CustomValidationPipe implements PipeTransform {
       excludeExtraneousValues: false,
     });
 
-    const errors = await validate(object);
+    const errors = await validate(object, { forbidUnknownValues: false });
 
     if (errors.length > 0) {
       const findFirstConstraint = (errors: any[]): string | null => {
