@@ -1,20 +1,20 @@
 import { JwtService } from '@nestjs/jwt';
-import { AuthRepository } from './auth.repository';
-import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BcryptService } from '../../bcrypt/bcrypt.service';
-import { PostSignUpRequestDto } from './dto/request/post-sign-up-request.dto';
-import { UserInfo } from '../../entity/user.entity';
-import { PostSignUpResponseDto } from './dto/response/post-sign-up-response.dto';
 import { DataSource, EntityManager } from 'typeorm';
+import { PostSignInRequestDto } from '../../../src/domain/auth/dto/request/post-sign-in-request.dto';
+import { BcryptService } from '../../../src/bcrypt/bcrypt.service';
+import { AuthRepository } from '../../../src/domain/auth/auth.repository';
+import { AuthService } from '../../../src/domain/auth/auth.service';
+import { PostSignUpRequestDto } from '../../../src/domain/auth/dto/request/post-sign-up-request.dto';
 import {
   DuplicateEmailException,
   DuplicateNicknameException,
   NotExistUserException,
   NotMatchPasswordException,
-} from '../../config/exception/service.exception';
-import { PostSignInRequestDto } from './dto/request/post-sign-in-request.dto';
+} from '../../../src/config/exception/service.exception';
+import { UserInfo } from '../../../src/entity/user.entity';
+import { PostSignUpResponseDto } from '../../../src/domain/auth/dto/response/post-sign-up-response.dto';
 
 describe('AuthService', () => {
   let authService: AuthService;
