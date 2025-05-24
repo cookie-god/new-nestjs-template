@@ -1,5 +1,5 @@
 import * as winston from 'winston';
-import * as DailyRotateFile from 'winston-daily-rotate-file';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 const { combine, timestamp, json, colorize, printf } = winston.format;
 
@@ -34,7 +34,7 @@ export const logger = winston.createLogger({
     // 날짜별로 생성되는 일반 로그 파일 설정
     new DailyRotateFile({
       dirname: 'logs', // 로그 파일이 저장될 디렉터리 (없으면 자동 생성)
-      filename: '%DATE%-combined.log', // 파일 이름 형식 (예: 2025-02-04-combined.log)
+      filename: '%DATE%-info.log', // 파일 이름 형식 (예: 2025-02-04-info.log)
       datePattern: 'YYYY-MM-DD', // 날짜 형식
       zippedArchive: true, // 로그 파일 압축 여부
       maxSize: '20m', // 개별 파일 최대 크기
