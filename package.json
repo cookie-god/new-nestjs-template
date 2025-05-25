@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "cross-env NODE_ENV=dev nest start --watch",
-    "dev": "npm run build && cross-env NODE_ENV=dev node dist/main",
+    "dev": "cross-env NODE_ENV=dev node dist/main",
     "start:debug": "cross-env NODE_ENV=dev nest start --debug --watch",
     "start:prod": "cross-env NODE_ENV=prod node dist/main",
     "lint": "eslint \"{src,test}/**/*.ts\" --fix",
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
-    "@nestjs/cli": "^10.0.0",
+    "@nestjs/cli": "^10.4.9",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
     "@types/bcrypt": "^5.0.2",

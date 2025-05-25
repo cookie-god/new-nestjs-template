@@ -1,5 +1,5 @@
 import * as winston from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
+import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 const { combine, timestamp, json, colorize, printf } = winston.format;
 
