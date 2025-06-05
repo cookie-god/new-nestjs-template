@@ -1,6 +1,46 @@
 version: '3.8'
 
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.16
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - '9200:9200'
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.16
+    container_name: kibana
+    ports:
+      - '5601:5601'
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false
+
+  apm-server:
+    build:
+      context: ./apm-server
+      dockerfile: Dockerfile
+    container_name: apm-server
+    ports:
+      - '8200:8200'
+    depends_on:
+      - elasticsearch
+    environment:
+      - output.elasticsearch.hosts=["http://elasticsearch:9200"]
+      - apm-server.host=0.0.0.0:8200
+      - xpack.security.enabled=false
+    command: >
+      apm-server -e
+        -E apm-server.host=0.0.0.0:8200
+        -E output.elasticsearch.hosts=["http://elasticsearch:9200"]
+
   app:
     container_name: template-server
     build: .
@@ -10,3 +50,9 @@ services:
       - '3000:3000'
     environment:
       - NODE_ENV=dev
+      - ELASTIC_APM_SERVER_URL=http://apm-server:8200
+      - ELASTIC_APM_SERVICE_NAME=template-server
+      - ELASTIC_APM_ENVIRONMENT=dev
+
+volumes:
+  esdata:
